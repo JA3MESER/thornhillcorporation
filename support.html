@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support — Thornhill Corporation</title>
+  <meta name="description" content="Contact Thornhill Corporation support. Send an enquiry and our team will reply by email.">
+  <meta name="theme-color" content="#0a0b0d">
+  <link rel="icon" type="image/png" href="assets/img/icon-dark-96.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <script>
+    (function () { try { var t = localStorage.getItem("thornhill.theme"); if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="Thornhill Corporation home">
+        <img class="logo-light" src="assets/img/icon-light-96.png" alt=""><img class="logo-dark" src="assets/img/icon-dark-96.png" alt="">
+        <div>Thornhill<small>Corporation</small></div>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          <li><a href="index.html#home">Home</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#gallery">Gallery</a></li>
+          <li><a href="support.html" class="active" aria-current="page">Support</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <a href="admin.html" class="btn btn-dark btn-sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          Admin
+        </a>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-head">
+      <div class="container">
+        <div class="eyebrow reveal">Support centre</div>
+        <h1 class="reveal d1">How can we help?</h1>
+        <p class="reveal d2">Whether it's marketing, media, development, finance or legal aid, fill in the form below and your enquiry will go straight to the Thornhill team. We'll reply to you by email.</p>
+      </div>
+    </div>
+
+    <div class="container form-layout">
+      <div class="panel reveal">
+        <form id="supportForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="fullName">Full name <span class="req">*</span></label>
+              <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" required>
+              <div class="error">Please enter your full name.</div>
+            </div>
+            <div class="field">
+              <label for="email">Email address <span class="req">*</span></label>
+              <input id="email" name="email" type="email" autocomplete="email" maxlength="200" required>
+              <div class="error">Please enter a valid email address.</div>
+            </div>
+            <div class="field">
+              <label for="phone">Phone <span class="opt">(optional)</span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="40">
+            </div>
+            <div class="field">
+              <label for="category">Enquiry type <span class="req">*</span></label>
+              <select id="category" name="category" required>
+                <option value="">Choose one…</option>
+                <option>General enquiry</option>
+                <option>Marketing</option>
+                <option>Media</option>
+                <option>Development</option>
+                <option>Finance</option>
+                <option>Legal aid</option>
+                <option>Partnerships &amp; business</option>
+                <option>Careers &amp; staff applications</option>
+                <option>Feedback or complaint</option>
+                <option>Other</option>
+              </select>
+              <div class="error">Please choose an enquiry type.</div>
+            </div>
+            <div class="field full">
+              <label for="subject">Subject <span class="req">*</span></label>
+              <input id="subject" name="subject" type="text" maxlength="200" required>
+              <div class="error">Please add a short subject.</div>
+            </div>
+            <div class="field full">
+              <label for="message">Your enquiry <span class="req">*</span></label>
+              <textarea id="message" name="message" maxlength="5000" required placeholder="Tell us as much as you can so we can help quickly."></textarea>
+              <div class="hint"><span>Minimum 10 characters</span><span id="count">0 / 5000</span></div>
+              <div class="error">Please write at least 10 characters.</div>
+            </div>
+            <!-- Honeypot field to catch spam bots -->
+            <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+            <div class="field full">
+              <label class="check"><input type="checkbox" id="consent" required> I agree that Thornhill Corporation may store these details and contact me by email about this enquiry.</label>
+              <div class="error">Please tick this box so we can reply to you.</div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <small>Fields marked <span style="color: var(--accent);">*</span> are required.</small>
+            <button class="btn btn-primary" type="submit" id="submitBtn">
+              Submit enquiry
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+            </button>
+          </div>
+        </form>
+
+        <div class="success" id="success" role="status" aria-live="polite">
+          <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <h2 style="font-size: 1.8rem;">Enquiry submitted</h2>
+          <p>Thank you, <strong id="successName"></strong>. Our team has received your enquiry and will reply to <strong id="successEmail"></strong>.</p>
+          <p style="margin-bottom: 4px;">Your reference number:</p>
+          <div class="ref" id="successRef">TH-000000</div>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="index.html" class="btn btn-ghost">Back to home</a>
+            <button class="btn btn-primary" type="button" id="newEnquiry">Send another enquiry</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-stack">
+        <div class="panel info-card reveal d1">
+          <h3>Contact information</h3>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
+            <div><strong>Email</strong><span><a href="mailto:support@thornhill.example" data-support-email>support@thornhill.example</a></span></div>
+          </div>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <div><strong>Response</strong><span>Every enquiry is reviewed personally by an administrator.</span></div>
+          </div>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/></svg>
+            <div><strong>Privacy</strong><span>Your details are only visible to Thornhill administrators.</span></div>
+          </div>
+        </div>
+
+        <div class="panel info-card faq reveal d2">
+          <h3>Common questions</h3>
+          <details>
+            <summary>How will I hear back?</summary>
+            <p>We'll reply by email to the address you enter in the form, so please double-check it before submitting.</p>
+          </details>
+          <details>
+            <summary>What is my reference number for?</summary>
+            <p>After submitting you'll get a reference like TH-AB12CD. Quote it if you need to follow up so we can find your enquiry quickly.</p>
+          </details>
+          <details>
+            <summary>Can I send more than one enquiry?</summary>
+            <p>Yes — but if it's about the same issue, one detailed enquiry helps us respond faster.</p>
+          </details>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a href="index.html" class="brand"><img class="logo-light" src="assets/img/icon-light-96.png" alt=""><img class="logo-dark" src="assets/img/icon-dark-96.png" alt=""><div>Thornhill<small>Corporation</small></div></a>
+          <p>Established 2026. Marketing, media, development, finance and legal aid — always with our clients' best interests at heart.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#services">Services</a></li>
+            <li><a href="index.html#gallery">Gallery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Help</h4>
+          <ul>
+            <li><a href="support.html">Support</a></li>
+            <li><a href="mailto:support@thornhill.example" data-support-email>support@thornhill.example</a></li>
+            <li><a href="admin.html">Administrator login</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/support.js"></script>
+</body>
+</html>
