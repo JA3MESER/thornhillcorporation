@@ -97,9 +97,21 @@
       <div class="container" style="max-width: 1360px;">
         <div class="banner" id="demoBanner" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-          <div><strong>Demo mode:</strong> you're only seeing enquiries submitted from this browser. Connect Supabase (see README.md) so enquiries from every customer arrive here.</div>
+          <div><strong>Demo mode:</strong> enquiries and documents are only saved in this browser. Connect Supabase (see README.md) so everything is shared with every customer and admin.</div>
         </div>
 
+        <div class="view-switch" role="tablist" aria-label="Admin sections">
+          <button type="button" role="tab" class="active" data-view="enquiries" aria-selected="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
+            Enquiries <span class="count-badge" id="newBadge" hidden></span>
+          </button>
+          <button type="button" role="tab" data-view="documents" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg>
+            Documents
+          </button>
+        </div>
+
+        <section id="enquiriesView">
         <div class="dash-head">
           <div>
             <h1 id="greeting">Welcome back</h1>
@@ -147,6 +159,43 @@
             </div>
           </div>
         </div>
+        </section>
+
+        <!-- ================= DOCUMENT HUB ================= -->
+        <section id="documentsView" hidden>
+          <div class="dash-head">
+            <div>
+              <h1>Document hub</h1>
+              <p>Share Google Docs and PDFs through short Thornhill links.</p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap: wrap;">
+              <a class="btn btn-ghost btn-sm" href="/documents" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+                Public page
+              </a>
+              <button class="btn btn-primary btn-sm" id="newDocBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                New document
+              </button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><span><i class="pip" style="background: var(--text-3)"></i>Documents</span><strong id="docStatTotal">0</strong></div>
+            <div class="stat"><span><i class="pip" style="background: var(--accent)"></i>Public</span><strong id="docStatPublic">0</strong></div>
+            <div class="stat"><span><i class="pip" style="background: var(--danger)"></i>PDFs</span><strong id="docStatPdf">0</strong></div>
+            <div class="stat"><span><i class="pip" style="background: var(--success)"></i>Total views</span><strong id="docStatViews">0</strong></div>
+          </div>
+
+          <div class="toolbar">
+            <div class="search field">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input id="docSearch" type="search" placeholder="Search documents by name, description or link…" aria-label="Search documents">
+            </div>
+          </div>
+
+          <div class="doc-grid" id="docList" aria-live="polite"></div>
+        </section>
       </div>
     </main>
   </div>
@@ -163,9 +212,100 @@
     </div>
   </div>
 
+  <!-- New / edit document -->
+  <div class="modal" id="docModal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle">
+    <div class="modal-card modal-wide">
+      <form id="docForm" novalidate>
+        <div class="modal-top">
+          <h3 id="docModalTitle">New document</h3>
+          <button type="button" class="icon-btn" data-close aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="form-error" id="docError" role="alert"></div>
+
+        <div class="field">
+          <label>Document source</label>
+          <div class="source-switch" role="radiogroup">
+            <label class="source-opt"><input type="radio" name="kind" value="google" checked>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+              <strong>Google Docs link</strong><small>Docs, Sheets, Slides, Forms or Drive</small></span></label>
+            <label class="source-opt"><input type="radio" name="kind" value="pdf">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              <strong>Upload a PDF</strong><small>Up to 5 MB</small></span></label>
+          </div>
+        </div>
+
+        <div class="field" id="googleField">
+          <label for="docUrl">Google link <span class="req">*</span></label>
+          <input id="docUrl" type="url" placeholder="https://docs.google.com/document/d/…" autocomplete="off">
+          <div class="hint"><span id="docUrlHint">Set sharing to “Anyone with the link can view” in Google first.</span></div>
+        </div>
+
+        <div class="field" id="pdfField" hidden>
+          <label>PDF file <span class="req">*</span></label>
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="docFile" accept="application/pdf,.pdf" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3"/></svg>
+            <strong id="dropTitle">Drop a PDF here or click to choose</strong>
+            <small id="dropSub">PDF only, maximum 5 MB</small>
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="docTitle">Document name <span class="req">*</span></label>
+          <input id="docTitle" type="text" maxlength="150" placeholder="e.g. Staff Handbook 2026" required>
+        </div>
+
+        <div class="field">
+          <label for="docDesc">Information <span class="opt">(optional)</span></label>
+          <textarea id="docDesc" maxlength="1000" placeholder="What is this document, and who is it for?"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="docSlug">Thornhill link <span class="req">*</span></label>
+          <div class="slug-input"><span id="slugPrefix">thornhillcorporation.co.uk/d/</span><input id="docSlug" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="staff-handbook"></div>
+          <div class="hint"><span>Lowercase letters, numbers and dashes only.</span></div>
+        </div>
+
+        <label class="check" style="margin-bottom: 8px;"><input type="checkbox" id="docPublic"> List this document on the public <strong>&nbsp;Documents&nbsp;</strong> page. If unticked, only people with the link can open it.</label>
+
+        <div class="row">
+          <button class="btn btn-ghost btn-sm" type="button" data-close>Cancel</button>
+          <button class="btn btn-primary btn-sm" type="submit" id="docSaveBtn">Create link</button>
+        </div>
+      </form>
+
+      <div class="doc-success" id="docSuccess" hidden>
+        <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h3>Your link is ready</h3>
+        <p id="docSuccessText">Anyone with this link can open the document.</p>
+        <div class="link-box"><span id="docSuccessLink"></span><button class="btn btn-dark btn-sm" type="button" id="docSuccessCopy">Copy link</button></div>
+        <div class="row" style="justify-content: center;">
+          <a class="btn btn-ghost btn-sm" id="docSuccessOpen" target="_blank" rel="noopener">Open link</a>
+          <button class="btn btn-primary btn-sm" type="button" data-close>Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete document confirmation -->
+  <div class="modal" id="docConfirmModal" role="dialog" aria-modal="true" aria-labelledby="docConfirmTitle">
+    <div class="modal-card">
+      <h3 id="docConfirmTitle">Delete this document?</h3>
+      <p>Its Thornhill link will stop working for everyone. This can't be undone.</p>
+      <div class="row">
+        <button class="btn btn-ghost btn-sm" type="button" id="docCancelDelete">Cancel</button>
+        <button class="btn btn-sm" style="background: var(--danger); color: #fff;" type="button" id="docConfirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/config.js"></script>
   <script src="assets/js/store.js"></script>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/admin.js"></script>
+  <script src="assets/js/documents-admin.js"></script>
 </body>
 </html>

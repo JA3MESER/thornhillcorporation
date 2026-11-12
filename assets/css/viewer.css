@@ -1,0 +1,55 @@
+/* Thornhill Corporation — Document viewer + public documents page */
+body.viewing { overflow: hidden; }
+.viewer { position: fixed; inset: 0; display: flex; flex-direction: column; background: var(--bg-alt); }
+.viewer[hidden] { display: none; }
+.viewer-bar {
+  display: flex; align-items: center; gap: 16px; padding: 12px 20px; min-height: 68px;
+  background: var(--nav-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border); z-index: 2;
+}
+.viewer-bar .brand img { width: 38px; height: 38px; }
+.viewer-title { flex: 1; min-width: 0; }
+.viewer-title h1 { font-size: 1.08rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; }
+.viewer-title span { font-size: .8rem; color: var(--text-3); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.viewer-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.viewer-info {
+  padding: 14px 20px; background: var(--surface); border-bottom: 1px solid var(--border);
+  color: var(--text-2); font-size: .94rem; white-space: pre-wrap; max-height: 30vh; overflow: auto;
+}
+.viewer-stage { flex: 1; position: relative; display: flex; }
+.viewer-stage iframe { flex: 1; width: 100%; height: 100%; border: 0; background: #fff; }
+.viewer-msg { margin: auto; text-align: center; padding: 32px 24px; max-width: 460px; }
+.viewer-msg h2 { font-size: 1.4rem; margin-bottom: 6px; overflow-wrap: anywhere; }
+.viewer-msg .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+.viewer-msg a:not(.btn) { color: var(--accent); font-weight: 700; }
+.pdf-badge { width: 72px; height: 88px; margin: 0 auto 18px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; letter-spacing: .06em;
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface)); color: var(--danger); border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent); }
+.spinner { width: 34px; height: 34px; margin: 0 auto 14px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@media (max-width: 760px) {
+  .viewer-bar { padding: 10px 12px; gap: 10px; }
+  .viewer-actions .lbl { display: none; }
+  .viewer-actions .btn { padding: 9px 11px; }
+  .viewer-bar .brand img { width: 34px; height: 34px; }
+}
+
+/* Public documents page */
+.docs-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; padding-bottom: 110px; }
+.pub-doc { display: flex; flex-direction: column; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; transition: transform .3s var(--ease), border-color .3s, box-shadow .3s; }
+.pub-doc:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); box-shadow: var(--shadow-lg); }
+.pub-doc .ic { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: .78rem; }
+.pub-doc .ic svg { width: 22px; height: 22px; }
+.pub-doc .ic.google { background: var(--accent-soft); color: var(--accent); }
+.pub-doc .ic.pdf { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+.pub-doc h3 { font-size: 1.15rem; margin: 0; overflow-wrap: anywhere; }
+.pub-doc p { margin: 0; font-size: .93rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.pub-doc .go { margin-top: auto; font-weight: 700; font-size: .9rem; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+.pub-doc .go svg { width: 16px; height: 16px; transition: transform .2s; }
+.pub-doc:hover .go svg { transform: translateX(4px); }
+.docs-tools { display: flex; gap: 12px; margin-bottom: 24px; }
+.docs-tools .search { flex: 1; max-width: 420px; position: relative; }
+.docs-tools .search input { padding-left: 42px; border-radius: 999px; background: var(--surface); }
+.docs-tools .search svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--text-3); }
+.docs-list .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.docs-list .empty-state strong { display: block; color: var(--text); font-size: 1.1rem; margin-bottom: 4px; }
+
+.nf { min-height: 100vh; display: grid; place-items: center; text-align: center; }

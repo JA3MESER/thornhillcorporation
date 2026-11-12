@@ -70,6 +70,18 @@ To swap an image, upload a new file with the same name. To add photos to the gal
 - **Enquiry types**: the `<option>` list in `support.html`
 - **Colours**: the variables at the top of `assets/css/styles.css`
 
+## Document hub
+
+In the admin panel, open the **Documents** tab and click **New document**. Paste a Google Docs, Sheets, Slides, Forms or Drive link, or upload a PDF (up to 5 MB). Give it a name and description, choose its Thornhill link (e.g. `thornhillcorporation.co.uk/d/staff-handbook`), and click **Create link**.
+
+- Anyone with the link sees the document on a Thornhill-branded page, with buttons to copy the link and open or download the original.
+- Tick **List on the public Documents page** to show it at `/documents` as well.
+- Google files must be shared as **"Anyone with the link can view"** in Google, or visitors will see a Google sign-in box instead.
+
+**One-time setup:** in Supabase → SQL Editor → New query, paste the whole of `supabase/documents.sql` and click **Run**. (Run it after `setup.sql`. Safe to run again.)
+
+---
+
 ## How replying works
 
 In the admin panel, open an enquiry and click **Reply via email** (opens your email app) or **Reply in Gmail**. The reply is pre-filled with the customer's address, a subject containing their reference number, and their original message quoted. Replying automatically moves a *New* enquiry to *In progress*.

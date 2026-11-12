@@ -98,6 +98,7 @@
   function logout() {
     session = null; items = []; selectedId = null;
     clearSession(); clearTimeout(idleTimer);
+    document.dispatchEvent(new Event("thornhill:logout"));
     dashView.classList.remove("show");
     loginView.style.display = "";
     document.title = "Administrator Panel — Thornhill Corporation";
@@ -114,6 +115,7 @@
     const h = new Date().getHours();
     $("#greeting").textContent = (h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + ", " + session.display.split(" ")[0];
     resetIdle();
+    document.dispatchEvent(new CustomEvent("thornhill:login", { detail: session }));
     await refresh();
   }
 
@@ -125,6 +127,8 @@
       render();
       const newCount = items.filter(i => i.status === "new").length;
       document.title = (newCount ? "(" + newCount + ") " : "") + "Administrator Panel — Thornhill Corporation";
+      const badge = $("#newBadge");
+      badge.textContent = newCount; badge.hidden = !newCount;
     } catch (ex) {
       if (ex.status === 401 || ex.status === 403 || /session|credential|not authori/i.test(ex.message)) {
         logout(); window.toast("Please sign in again", "error"); return;
@@ -132,6 +136,26 @@
       listEl.innerHTML = '<div class="empty"><strong>Couldn\'t load enquiries</strong>' + esc(ex.message) + "</div>";
     }
   }
+  /* ---------- section switcher (Enquiries / Documents) ---------- */
+  function showView(name) {
+    document.querySelectorAll(".view-switch [data-view]").forEach(b => {
+      const on = b.dataset.view === name;
+      b.classList.toggle("active", on); b.setAttribute("aria-selected", on);
+    });
+    $("#enquiriesView").hidden = name !== "enquiries";
+    $("#documentsView").hidden = name !== "documents";
+    try { sessionStorage.setItem("thornhill.admin.view", name); } catch (e) {}
+    document.dispatchEvent(new CustomEvent("thornhill:view", { detail: name }));
+  }
+  document.querySelectorAll(".view-switch [data-view]").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+  try { const v = sessionStorage.getItem("thornhill.admin.view"); if (v === "documents") showView(v); } catch (e) {}
+
+  // Let other admin modules (documents) use the session and sign out on expiry
+  window.ThornhillAdmin = {
+    session: () => session,
+    expire: () => { logout(); window.toast("Please sign in again", "error"); }
+  };
+
   $("#refreshBtn").addEventListener("click", async () => { await refresh(); window.toast("Inbox refreshed"); });
 
   // Auto-refresh every 60s while the tab is visible
