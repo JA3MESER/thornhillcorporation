@@ -20,7 +20,6 @@
   let loaded = false;
   let query = "";
   let editing = null;        // document being edited, or null for new
-  let slugTouched = false;   // stop auto-filling the slug once the admin edits it
   let pdf = null;            // { name, size, data } for a newly chosen file
   let pendingDelete = null;
 
@@ -162,9 +161,9 @@
     $("#docUrl").value = doc && doc.kind === "google" ? doc.url : "";
     $("#docTitle").value = doc ? doc.title : "";
     $("#docDesc").value = doc && doc.description ? doc.description : "";
-    $("#docSlug").value = doc ? doc.slug : "";
+    $("#docSlug").value = doc ? doc.slug : newCode();
+    $("#slugHint").textContent = doc ? "The link stays the same when you edit a document." : "A random code is created for every new document.";
     $("#docPublic").checked = !!(doc && doc.is_public);
-    slugTouched = !!doc;
     updateUrlHint();
     resetDrop(doc && doc.kind === "pdf" ? doc : null);
     modal.classList.add("open");
@@ -173,14 +172,12 @@
 
   function closeModal() { modal.classList.remove("open"); }
 
-  // Auto-fill the short link from the document name until the admin edits it
-  $("#docTitle").addEventListener("input", () => { if (!slugTouched) $("#docSlug").value = Docs.slugify($("#docTitle").value); });
-  $("#docSlug").addEventListener("input", () => {
-    slugTouched = true;
-    const el = $("#docSlug"), pos = el.selectionStart;
-    el.value = el.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    el.setSelectionRange(pos, pos);
-  });
+  /** Random link code, e.g. "k7m2x9qa" (no look-alike characters such as 0/o or 1/l) */
+  function newCode() {
+    const chars = "abcdefghjkmnpqrstuvwxyz23456789", out = new Uint32Array(8);
+    crypto.getRandomValues(out);
+    return Array.from(out, n => chars[n % chars.length]).join("");
+  }
 
   /* Google link feedback */
   function updateUrlHint() {
@@ -243,27 +240,44 @@
 
     const kind = form.querySelector('input[name="kind"]:checked').value;
     const title = $("#docTitle").value.trim();
-    const slug = $("#docSlug").value.trim().replace(/^-+|-+$/g, "");
+    let slug = editing ? editing.slug : $("#docSlug").value;
     const url = $("#docUrl").value.trim();
 
     if (kind === "google" && !Docs.parseGoogle(url)) return showErr("Please paste a Google Docs, Sheets, Slides, Forms or Drive link (starting with https://).");
     if (kind === "pdf" && !pdf && !(editing && editing.kind === "pdf")) return showErr("Please choose a PDF to upload.");
     if (title.length < 2) return showErr("Please give the document a name.");
-    if (!Docs.validSlug(slug)) return showErr("The Thornhill link can only use lowercase letters, numbers and dashes, and can't start or end with a dash.");
 
     const btn = $("#docSaveBtn"), label = btn.textContent;
     btn.disabled = true;
     btn.textContent = pdf ? "Uploading…" : "Saving…";
+
+    // Open the new tab now (while the click still counts) so pop-up blockers allow it,
+    // then point it at the document once it's saved.
+    const tab = editing ? null : window.open("", "_blank");
+    if (tab) { try { tab.document.title = "Opening document…"; tab.document.body.style.cssText = "margin:0;background:#525659"; } catch (e) {} }
+
     try {
-      const res = await Store.saveDocument(s.name, s.code, {
-        id: editing ? editing.id : null, slug, title, description: $("#docDesc").value.trim(), kind,
-        url: kind === "google" ? url : null,
-        fileName: pdf ? pdf.name : null, fileSize: pdf ? pdf.size : null, pdfData: pdf ? pdf.data : null,
-        isPublic: $("#docPublic").checked
-      }, s.display);
+      let res, attempts = 0;
+      while (true) {
+        try {
+          res = await Store.saveDocument(s.name, s.code, {
+            id: editing ? editing.id : null, slug, title, description: $("#docDesc").value.trim(), kind,
+            url: kind === "google" ? url : null,
+            fileName: pdf ? pdf.name : null, fileSize: pdf ? pdf.size : null, pdfData: pdf ? pdf.data : null,
+            isPublic: $("#docPublic").checked
+          }, s.display);
+          break;
+        } catch (ex) {
+          // In the rare case a random code is already taken, pick another and retry
+          if (!editing && /already in use/i.test(ex.message) && ++attempts < 5) { slug = newCode(); continue; }
+          throw ex;
+        }
+      }
       await load();
       showSuccess(res.slug, !!editing);
+      if (tab) tab.location.href = Docs.linkFor(res.slug);
     } catch (ex) {
+      if (tab) tab.close();
       if (ex.status === 401) { closeModal(); return Admin.expire(); }
       showErr(friendly(ex));
     } finally {
@@ -277,8 +291,9 @@
     success.hidden = false;
     success.querySelector("h3").textContent = wasEdit ? "Changes saved" : "Your link is ready";
     $("#docSuccessText").textContent = $("#docPublic").checked
-      ? "Anyone with this link can open the document, and it's listed on your public Documents page."
-      : "Anyone with this link can open the document.";
+      ? "It's opened in a new tab. Anyone with this link can view it, and it's listed on your public Documents page."
+      : "It's opened in a new tab. Anyone with this link can view it.";
+    if (wasEdit) $("#docSuccessText").textContent = "The link stays the same, so anyone you've already shared it with will see the update.";
     $("#docSuccessLink").textContent = link.replace(/^https?:\/\//, "");
     $("#docSuccessOpen").href = link;
     $("#docSuccessCopy").onclick = () => copy(link);

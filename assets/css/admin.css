@@ -221,3 +221,5 @@ body.admin { background: var(--bg-alt); min-height: 100vh; }
 .doc-success .link-box span { font-size: .92rem; }
 
 #enquiriesView, #documentsView { padding: 0; }
+.slug-input.readonly { background: var(--surface-2); }
+.field .slug-input.readonly input { background: transparent; color: var(--accent); font-weight: 700; cursor: default; }
