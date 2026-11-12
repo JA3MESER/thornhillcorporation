@@ -78,6 +78,8 @@ In the admin panel, open the **Documents** tab and click **New document**. Paste
 - Tick **List on the public Documents page** to show it at `/documents` as well.
 - Google files must be shared as **"Anyone with the link can view"** in Google, or visitors will see a Google sign-in box instead.
 
+**Optional — show Google files as real PDFs:** deploy the `google-pdf` Edge Function (code in `supabase/functions/google-pdf/index.ts`) in Supabase → Edge Functions, named exactly `google-pdf`, with JWT verification turned off. Without it, Google files open in Google's own preview instead.
+
 **One-time setup:** in Supabase → SQL Editor → New query, paste the whole of `supabase/documents.sql` and click **Run**. (Run it after `setup.sql`. Safe to run again.)
 
 ---

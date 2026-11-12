@@ -55,6 +55,43 @@
     }
   }
 
+  /** Show a PDF in the browser's own PDF viewer, filling the window */
+  function showPdf(blob, fileName) {
+    clearTimeout(watchdog);
+    const url = URL.createObjectURL(new File([blob], fileName, { type: "application/pdf" }));
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || navigator.pdfViewerEnabled === false;
+    if (isMobile) {
+      // Phones can't show a PDF inside a page, so hand it straight to the phone's PDF viewer
+      location.replace(url);
+      fail("Opening PDF…");
+      const a = document.createElement("a"); a.href = url; a.textContent = "Tap here if it doesn't open"; stage.appendChild(a);
+      return;
+    }
+    fill(url, document.title);
+  }
+
+  /** Ask the Supabase "google-pdf" function for a Google file as a PDF. Returns a Blob, or null. */
+  async function fetchGooglePdf(code) {
+    const cfg = window.THORNHILL_CONFIG || {};
+    if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return null;
+    const base = cfg.supabaseUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+    const key = cfg.supabaseAnonKey.trim();
+    const headers = { apikey: key };
+    if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 15000);
+    try {
+      const res = await fetch(base + "/functions/v1/google-pdf?code=" + encodeURIComponent(code), { headers, signal: ctrl.signal });
+      if (!res.ok || !(res.headers.get("content-type") || "").includes("pdf")) return null;
+      const blob = await res.blob();
+      return blob.size > 0 ? blob : null;
+    } catch (e) {
+      return null; // helper not deployed, Google refused, or timed out → fall back to preview
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
   // Safety net: never leave someone on an endless loading screen
   const watchdog = setTimeout(() => {
     if (!viewer.querySelector("iframe")) {
@@ -80,29 +117,24 @@
 
     if (doc.kind === "google") {
       const g = Docs.parseGoogle(doc.url);
+      // Best: ask the google-pdf helper on Supabase for a real PDF, so it opens in
+      // the browser's normal PDF viewer. If that isn't set up, use Google's preview.
+      const pdf = await fetchGooglePdf(doc.slug);
+      if (pdf) return showPdf(pdf, doc.title + ".pdf");
       if (!g) return fail("This document can't be shown here.", doc.url);
       return fill(g.embed, doc.title);
     }
 
-    // PDF stored in the database → the browser's own PDF viewer
-    let url;
+    // PDF stored in the database
+    let blob;
     try {
       const bin = atob(doc.pdf_data), bytes = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      url = URL.createObjectURL(new File([bytes], doc.file_name || doc.title + ".pdf", { type: "application/pdf" }));
+      blob = new Blob([bytes], { type: "application/pdf" });
     } catch (e) {
       return fail("This PDF couldn't be opened.");
     }
-
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || navigator.pdfViewerEnabled === false;
-    if (isMobile) {
-      // Phones can't show a PDF inside a page, so hand it straight to the phone's PDF viewer
-      location.replace(url);
-      fail("Opening PDF…");
-      const a = document.createElement("a"); a.href = url; a.textContent = "Tap here if it doesn't open"; stage.appendChild(a);
-      return;
-    }
-    fill(url, doc.title);
+    showPdf(blob, doc.file_name || doc.title + ".pdf");
   })().catch(e => {
     console.error(e);
     clearTimeout(watchdog);
