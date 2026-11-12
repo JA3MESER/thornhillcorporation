@@ -55,6 +55,14 @@
     }
   }
 
+  // Safety net: never leave someone on an endless loading screen
+  const watchdog = setTimeout(() => {
+    if (!viewer.querySelector("iframe")) {
+      fail("This is taking longer than expected.");
+      const a = document.createElement("a"); a.href = location.href; a.textContent = "Reload the page"; stage.appendChild(a);
+    }
+  }, 20000);
+
   (async function () {
     let doc;
     try {
@@ -64,6 +72,7 @@
       document.title = "Couldn't open document";
       return fail("Couldn't reach the server. Please check your connection and reload the page.");
     }
+    clearTimeout(watchdog);
     if (!doc) return showNotFound(true);
 
     // The tab shows the document's name, like a PDF's file name
@@ -94,5 +103,9 @@
       return;
     }
     fill(url, doc.title);
-  })();
+  })().catch(e => {
+    console.error(e);
+    clearTimeout(watchdog);
+    fail("Sorry, this document couldn't be opened. Please reload the page.");
+  });
 })();
