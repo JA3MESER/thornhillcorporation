@@ -264,9 +264,9 @@
         </div>
 
         <div class="field">
-          <label for="docSlug">Thornhill link <span class="req">*</span></label>
-          <div class="slug-input"><span id="slugPrefix">thornhillcorporation.co.uk/d/</span><input id="docSlug" type="text" maxlength="60" autocomplete="off" spellcheck="false" placeholder="staff-handbook"></div>
-          <div class="hint"><span>Lowercase letters, numbers and dashes only.</span></div>
+          <label>Thornhill link</label>
+          <div class="slug-input readonly"><span id="slugPrefix">thornhillcorporation.co.uk/d/</span><input id="docSlug" type="text" readonly tabindex="-1" aria-readonly="true"></div>
+          <div class="hint"><span id="slugHint">A random code is created for every new document.</span></div>
         </div>
 
         <label class="check" style="margin-bottom: 8px;"><input type="checkbox" id="docPublic"> List this document on the public <strong>&nbsp;Documents&nbsp;</strong> page. If unticked, only people with the link can open it.</label>
