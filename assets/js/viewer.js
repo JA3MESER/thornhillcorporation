@@ -10,7 +10,17 @@
   const Docs = window.ThornhillDocs;
   const match = location.pathname.match(/^\/d\/([a-z0-9-]{1,60})\/?$/i);
 
-  if (!match) return showNotFound(false);
+  if (!match) {
+    // On the staff Link Hub, anything that isn't a document link goes to the sign-in page
+    if (document.body.dataset.site === "hub") return location.replace("/");
+    return showNotFound(false);
+  }
+
+  // Document links now live on the staff Link Hub — forward any old main-site links there
+  if (document.body.dataset.site !== "hub") {
+    location.replace(window.ThornhillSites.hub() + "/d/" + match[1].toLowerCase());
+    return;
+  }
 
   const slug = match[1].toLowerCase();
   const viewer = $("#viewer"), stage = $("#stage");

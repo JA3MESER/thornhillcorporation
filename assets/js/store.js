@@ -201,11 +201,89 @@
       return d;
     },
 
+    /* ======================= Redirects ======================= */
+
+    async listRedirects(name, code) {
+      if (LIVE) {
+        const r = await rpc("admin_list_redirects", { p_name: name, p_code: code });
+        if (!r || !r.ok) throw notAuthorised();
+        return r.items || [];
+      }
+      if (!demoCheck(name, code)) throw notAuthorised();
+      return demoRedirects().sort((a, b) => a.path.toLowerCase().localeCompare(b.path.toLowerCase()));
+    },
+
+    /** r = { id, path, destination, label } → { id, path } */
+    async saveRedirect(name, code, r, adminName) {
+      const path = String(r.path || "").trim().replace(/^\/+|\/+$/g, "");
+      if (LIVE) {
+        const res = await rpc("admin_save_redirect", {
+          p_name: name, p_code: code, p_id: r.id || null, p_path: path, p_destination: r.destination, p_label: r.label || null
+        });
+        if (res && res.auth === false) throw notAuthorised();
+        if (!res || !res.ok) throw new Error((res && res.error) || "Couldn't save the redirect.");
+        return res;
+      }
+      if (!demoCheck(name, code)) throw notAuthorised();
+      const list = demoRedirects();
+      if (["assets", "d", "index.html", "404.html", "cname"].includes(path.split("/")[0].toLowerCase()))
+        throw new Error("That short link is reserved by the website. Please choose another.");
+      if (list.some(x => x.path.toLowerCase() === path.toLowerCase() && x.id !== r.id))
+        throw new Error("That short link is already in use. Please choose another.");
+      const now = new Date().toISOString();
+      let item = r.id && list.find(x => x.id === r.id);
+      if (!item) { item = { id: uuid(), clicks: 0, created_at: now, created_by: adminName }; list.push(item); }
+      Object.assign(item, { path, destination: r.destination.trim(), label: r.label || null, updated_at: now });
+      demoRedirectsWrite(list);
+      return { id: item.id, path };
+    },
+
+    async deleteRedirect(name, code, id) {
+      if (LIVE) {
+        const r = await rpc("admin_delete_redirect", { p_name: name, p_code: code, p_id: id });
+        if (r === null) throw notAuthorised();
+        return r;
+      }
+      if (!demoCheck(name, code)) throw notAuthorised();
+      demoRedirectsWrite(demoRedirects().filter(x => x.id !== id));
+      return true;
+    },
+
+    /** Public: destination for a short link (counts a click), or null. */
+    async resolveRedirect(path) {
+      const clean = String(path || "").replace(/^\/+|\/+$/g, "");
+      if (LIVE) return await rpc("resolve_redirect", { p_path: clean });
+      const list = demoRedirects();
+      const item = list.find(x => x.path.toLowerCase() === clean.toLowerCase());
+      if (!item) return null;
+      item.clicks = (item.clicks || 0) + 1;
+      demoRedirectsWrite(list);
+      return item.destination;
+    },
+
     /** Public: documents marked as public, for the /documents page. */
     async listPublicDocuments() {
       if (LIVE) return (await rpc("list_public_documents", {})) || [];
       return demoDocs().filter(d => d.is_public).map(({ pdf_data, ...rest }) => rest);
     }
+  };
+
+  const REDIRECTS_KEY = "thornhill.demo.redirects";
+  function demoRedirects() {
+    try { return JSON.parse(localStorage.getItem(REDIRECTS_KEY)) || []; } catch (e) { return []; }
+  }
+  function demoRedirectsWrite(list) {
+    try { localStorage.setItem(REDIRECTS_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+
+  /* ---------- The three Thornhill websites ----------
+     Worked out from the current address, e.g. on link-hub.thornhillcorporation.co.uk
+     the main site is thornhillcorporation.co.uk. Override any of them in config.js. */
+  window.ThornhillSites = {
+    root() { return cfg.mainDomain || location.hostname.replace(/^(www|link-hub|redirects)\./i, ""); },
+    main() { return (cfg.mainUrl || "https://" + this.root()).replace(/\/+$/, ""); },
+    hub() { return (cfg.linkHubUrl || "https://link-hub." + this.root()).replace(/\/+$/, ""); },
+    redirects() { return (cfg.redirectsUrl || "https://redirects." + this.root()).replace(/\/+$/, ""); }
   };
 
   const DOCS_KEY = "thornhill.demo.documents";

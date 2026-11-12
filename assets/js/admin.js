@@ -143,12 +143,12 @@
       b.classList.toggle("active", on); b.setAttribute("aria-selected", on);
     });
     $("#enquiriesView").hidden = name !== "enquiries";
-    $("#documentsView").hidden = name !== "documents";
     try { sessionStorage.setItem("thornhill.admin.view", name); } catch (e) {}
     document.dispatchEvent(new CustomEvent("thornhill:view", { detail: name }));
   }
   document.querySelectorAll(".view-switch [data-view]").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
-  try { const v = sessionStorage.getItem("thornhill.admin.view"); if (v === "documents") showView(v); } catch (e) {}
+  // Documents and redirects now live on the staff Link Hub
+  document.querySelectorAll("[data-hub-link]").forEach(a => { a.href = window.ThornhillSites.hub(); });
 
   // Let other admin modules (documents) use the session and sign out on expiry
   window.ThornhillAdmin = {
