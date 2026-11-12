@@ -14,8 +14,8 @@ window.THORNHILL_CONFIG = {
      Fill them in after following README.md → "Connect the backend" so that
      enquiries from every visitor reach every admin.
      ------------------------------------------------------------------------ */
-  supabaseUrl: "sb_publishable_v0rw3xgpcXqUKU5IyWmexQ_6Wqhw7Vw",       // e.g. "https://abcdxyz.supabase.co"
-  supabaseAnonKey: "https://urydfswttjzcgsooivun.supabase.co/rest/v1/",   // the "anon public" key from Supabase → Project Settings → API
+  supabaseUrl: "https://urydfswttjzcgsooivun.supabase.co/rest/v1/",       // e.g. "https://abcdxyz.supabase.co"
+  supabaseAnonKey: "sb_publishable_v0rw3xgpcXqUKU5IyWmexQ_6Wqhw7Vw",   // the "anon public" key from Supabase → Project Settings → API
 
   // DEMO MODE ONLY — admin logins used when Supabase isn't connected yet.
   // Once Supabase is connected these are ignored and admins are managed in the database.
