@@ -16,7 +16,9 @@
     // Legacy "anon" keys are JWTs (start with "eyJ") and also go in the Authorization header.
     // Newer "sb_publishable_..." keys must only be sent as the apikey header.
     if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key;
-    const res = await fetch(cfg.supabaseUrl.trim().replace(/\/$/, "") + "/rest/v1/rpc/" + fn, {
+    // Accept the URL with or without a trailing "/rest/v1/" (Supabase's Data API page shows it both ways)
+    const base = cfg.supabaseUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+    const res = await fetch(base + "/rest/v1/rpc/" + fn, {
       method: "POST",
       headers,
       body: JSON.stringify(args || {})

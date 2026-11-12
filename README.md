@@ -3,7 +3,7 @@
 A sleek, modern website for Thornhill Corporation with:
 
 - **Customer side** — Home, About, Services, Values, Gallery and a **Support** page with an enquiry form
-- **Administrator side** (`admin.html`) — log in with **full name + special code**, read every enquiry, reply by email, track status (New → In progress → Resolved), add internal notes, delete, search, filter and export to CSV
+- **Administrator side** (`/admin-panel`) — log in with **full name + special code**, read every enquiry, reply by email, track status (New → In progress → Resolved), add internal notes, delete, search, filter and export to CSV
 - **Light & dark mode** toggle (remembers each visitor's choice)
 - White, black & blue theme, fully mobile-responsive
 

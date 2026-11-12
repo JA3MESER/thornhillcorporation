@@ -49,7 +49,7 @@
   if (toTop) toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
   /* Highlight current section in nav on the home page */
-  const sectionLinks = [...document.querySelectorAll('.nav-links a[href^="#"], .nav-links a[href^="index.html#"]')];
+  const sectionLinks = [...document.querySelectorAll('.nav-links a[href^="#"], .nav-links a[href^="/#"]')];
   if (sectionLinks.length && "IntersectionObserver" in window) {
     const map = new Map();
     sectionLinks.forEach(a => {
