@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261113c">
-  <link rel="stylesheet" href="assets/css/email.css?v=20261113c">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20261113c">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261113e">
+  <link rel="stylesheet" href="assets/css/email.css?v=20261113e">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20261113e">
 </head>
 <body class="admin">
 
@@ -70,8 +70,26 @@
         </form>
 
         <div class="quick-sep"><span>or</span></div>
-        <button class="btn quick-btn btn-block" id="quickBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 11c0 3.5-1 6.5-2.5 9"/><path d="M8.5 8.5A4 4 0 0 1 16 11c0 1.6-.1 3.1-.4 4.5"/><path d="M5 11a7 7 0 0 1 12.6-4.2"/><path d="M19 13c0 1.7-.2 3.3-.6 4.8"/><path d="M12 15c0 2-.4 3.9-1 5.6"/></svg><span class="lbl">Sign in with Thornhill Quick</span></button>
-        <p class="quick-help" id="quickHelp">Use your fingerprint, face or device PIN. Set it up once after signing in with your code.</p>
+        <button class="btn quick-btn btn-block" id="quickBtn" type="button" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 11c0 3.5-1 6.5-2.5 9"/><path d="M8.5 8.5A4 4 0 0 1 16 11c0 1.6-.1 3.1-.4 4.5"/><path d="M5 11a7 7 0 0 1 12.6-4.2"/><path d="M19 13c0 1.7-.2 3.3-.6 4.8"/><path d="M12 15c0 2-.4 3.9-1 5.6"/></svg><span class="lbl">Sign in with Thornhill Quick</span></button>
+        <div class="quick-choice" id="quickChoice" hidden>
+          <button type="button" data-qc="phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg><span><strong>Use my phone</strong><small>Approve with your Thornhill ID — best for PCs and Macs</small></span></button>
+          <button type="button" data-qc="device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="12" rx="1"/><path d="M2 20h20"/></svg><span><strong>Use this device</strong><small>Fingerprint, face, Windows Hello or device PIN</small></span></button>
+        </div>
+        <div class="quick-link" id="quickLink" hidden>
+          <div class="ql-qr" id="qlQr" aria-label="QR code to open your Thornhill ID"></div>
+          <div class="ql-body">
+            <span class="ql-label">Your sign-in code</span>
+            <strong class="ql-code" id="qlCode">——— ———</strong>
+            <ol>
+              <li>Scan the QR code with your phone, or open <b id="qlUrl">thornhillcorporation.co.uk/id</b></li>
+              <li>Unlock your Thornhill ID with your fingerprint, face or PIN</li>
+              <li>Check the code matches and tap <b>Approve</b></li>
+            </ol>
+            <div class="ql-status" id="qlStatus">Waiting for your phone… <span id="qlTime"></span></div>
+            <div class="ql-actions"><button class="btn btn-ghost btn-sm" type="button" id="qlRetry" hidden>Get a new code</button><button class="btn btn-ghost btn-sm" type="button" id="qlCancel">Cancel</button></div>
+          </div>
+        </div>
+        <p class="quick-help" id="quickHelp">Use your phone's Thornhill ID, or this device's fingerprint, face or PIN.</p>
 
         <div class="demo-note" id="demoNote" hidden>
           <strong>Demo mode.</strong> The backend isn't connected yet, so enquiries are only stored in this browser.
@@ -241,7 +259,7 @@
       <div class="composer-head">
         <h3 id="composerTitle">New email</h3>
         <div class="composer-head-actions">
-          <button type="button" class="icon-btn" id="composerPreviewBtn" aria-label="Preview" title="Preview how it will look">
+          <button type="button" class="icon-btn" id="composerPreviewBtn" aria-label="Recipient view" aria-pressed="false" title="Recipient view: see it as they will">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
           <button type="button" class="icon-btn" id="composerClose" aria-label="Close">
@@ -271,8 +289,13 @@
           Attach
         </label>
       </div>
-      <textarea id="cBody" placeholder="Write your message…" spellcheck="true"></textarea>
-      <iframe id="cPreview" title="Email preview" hidden sandbox=""></iframe>
+      <div class="composer-work" id="cWork">
+        <textarea id="cBody" placeholder="Write your message…" spellcheck="true"></textarea>
+        <div class="cpreview-wrap" id="cPreviewWrap" hidden>
+          <div class="cpreview-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>What the recipient will see <span>· updates as you type</span></div>
+          <iframe id="cPreview" title="What the recipient will see" sandbox="allow-same-origin"></iframe>
+        </div>
+      </div>
       <div class="attach-list" id="cAttachList"></div>
       <div class="composer-foot">
         <label class="check"><input type="checkbox" id="cSig" checked> Add signature</label>
@@ -290,6 +313,13 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Recipient view: see emails exactly as the recipient does -->
+  <button class="rv-toggle" id="rvToggle" type="button" aria-pressed="false" hidden title="See emails exactly as the recipient sees them">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span class="rv-text">Recipient view</span><span class="rv-state" id="rvState">Off</span>
+  </button>
 
   <!-- ================= EMAIL MANAGEMENT ================= -->
   <div class="modal" id="mailManage" role="dialog" aria-modal="true" aria-labelledby="mailManageTitle">
@@ -344,11 +374,12 @@
     </div>
   </div>
 
-  <script src="assets/js/config.js?v=20261113c"></script>
-  <script src="assets/js/store.js?v=20261113c"></script>
-  <script src="assets/js/main.js?v=20261113c"></script>
-  <script src="assets/js/email-centre.js?v=20261113c"></script>
-  <script src="assets/js/admin.js?v=20261113c"></script>
-  <script src="assets/js/quick.js?v=20261113c"></script>
+  <script src="assets/js/config.js?v=20261113e"></script>
+  <script src="assets/js/store.js?v=20261113e"></script>
+  <script src="assets/js/main.js?v=20261113e"></script>
+  <script src="assets/js/email-centre.js?v=20261113e"></script>
+  <script src="assets/js/qr.js?v=20261113e"></script>
+  <script src="assets/js/admin.js?v=20261113e"></script>
+  <script src="assets/js/quick.js?v=20261113e"></script>
 </body>
 </html>

@@ -18,7 +18,8 @@
     current: null,        // { threadId, messages, enquiry }
     compose: null,        // composer context
     attachments: [],
-    pendingSend: null
+    pendingSend: null,
+    recipientView: (() => { try { return localStorage.getItem("thornhill.email.recipientView") === "1"; } catch (e) { return false; } })()
   };
 
   const admin = () => window.ThornhillAdmin;
@@ -137,6 +138,7 @@
       return;
     }
     shell.hidden = false; setup.hidden = true;
+    updateRvButton();
     const n = o.unread_total || 0;
     badge.textContent = n; badge.hidden = !n;
     $("#cntInbox").textContent = n || "";
@@ -254,6 +256,11 @@
     pane.querySelectorAll(".msg-html").forEach(f => {
       const m = c.messages.find(x => x.id === f.dataset.id);
       // Received email is shown in a locked-down frame: no scripts, links open in a new tab
+      if (m.direction === "out") {
+        f.srcdoc = m.body_html.replace("<head>", '<head><base target="_blank">') + "<!-- " + Date.now() + " -->";
+        f.addEventListener("load", () => { try { f.style.height = Math.min(4000, f.contentDocument.documentElement.scrollHeight + 4) + "px"; } catch (e) { f.style.height = "640px"; } });
+        return;
+      }
       f.srcdoc = `<!DOCTYPE html><html><head><base target="_blank"><meta charset="utf-8"><style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px;line-height:1.6;color:#1f2430;word-wrap:break-word}img{max-width:100%;height:auto}blockquote{margin:0 0 0 8px;padding-left:10px;border-left:3px solid #d0d7e2;color:#5b6475}</style></head><body>${m.body_html}</body></html>`;
       f.addEventListener("load", () => {
         try {
@@ -274,6 +281,7 @@
     const by = m.direction === "out" && m.sent_by ? ` · sent by ${esc(m.sent_by)}` : "";
     let body;
     if (m.direction === "in" && m.body_html) body = `<iframe class="msg-html" data-id="${esc(m.id)}" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox" title="Email from ${esc(name)}"></iframe>`;
+    else if (m.direction === "out" && state.recipientView && m.body_html) body = `<div class="rv-note">As ${esc((m.to_addresses || [])[0] || "the recipient")} received it</div><iframe class="msg-html out" data-id="${esc(m.id)}" sandbox="allow-same-origin" title="Email as received"></iframe>`;
     else if (m.direction === "out") body = `<div class="msg-text fmt">${formatBody(m.body_text || "")}</div>`;
     else body = `<div class="msg-text plain">${esc(m.body_text || "")}</div>`;
     const atts = (m.attachments || []).length ? `<div class="msg-atts">${m.attachments.map(a => `<span class="att">📎 ${esc(a.filename)}${a.size ? " · " + fmtSize(a.size) : ""}</span>`).join("")}</div>` : "";
@@ -429,10 +437,10 @@
       st.hidden = false; st.value = "in_progress";
     } else { enq.hidden = true; st.hidden = true; }
     $("#composerError").classList.remove("show");
-    showPreview(false);
     renderAttachments();
     $("#composerWrap").hidden = false;
     document.body.classList.add("composing");
+    applyRecipientView(); updateRvButton();
     setTimeout(() => {
       const to = $("#cTo");
       if (!to.value) to.focus();
@@ -449,6 +457,7 @@
     $("#composerWrap").hidden = true;
     document.body.classList.remove("composing");
     state.compose = null; state.attachments = [];
+    updateRvButton();
   }
   $("#composerClose").addEventListener("click", () => closeComposer());
   $("#composerDiscard").addEventListener("click", () => closeComposer());
@@ -503,7 +512,7 @@
     else if (!body.value.trim()) body.value = text;
     else body.setRangeText(text, body.selectionStart, body.selectionEnd, "end");
     if (t.subject && !$("#cSubject").value.trim()) $("#cSubject").value = fill(t.subject, vars);
-    body.focus();
+    body.focus(); schedulePreview();
   });
 
   // Attachments
@@ -526,19 +535,50 @@
     if (b) { state.attachments.splice(+b.dataset.rm, 1); renderAttachments(); }
   });
 
-  // Preview
-  function showPreview(on) {
-    const f = $("#cPreview"), body = $("#cBody"), btn = $("#composerPreviewBtn");
-    btn.classList.toggle("on", on);
-    f.hidden = !on; body.hidden = on;
-    document.querySelector(".composer-toolbar").classList.toggle("disabled", on);
-    if (on) {
-      const mb = state.overview.mailboxes.find(m => m.id === $("#cFrom").value);
-      const ref = ($("#cSubject").value.match(/TH-[A-Z0-9]{6}/i) || [])[0];
-      f.srcdoc = brandedHtml(body.value, $("#cSig").checked && mb ? mb.signature : null, state.overview.settings.site_url, ref ? ref.toUpperCase() : null);
-    }
+  /* ---------- Recipient view (live preview beside the editor) ---------- */
+  let previewTimer = null;
+  function renderPreview() {
+    if (!state.recipientView || $("#composerWrap").hidden || !state.overview) return;
+    const f = $("#cPreview");
+    const mb = state.overview.mailboxes.find(m => m.id === $("#cFrom").value);
+    const ref = ($("#cSubject").value.match(/TH-[A-Z0-9]{6}/i) || [])[0];
+    let y = 0;
+    try { y = f.contentWindow.scrollY; } catch (e) {}
+    // A unique marker forces the frame to redraw every time (fixes the blank preview when toggled)
+    f.srcdoc = brandedHtml($("#cBody").value, $("#cSig").checked && mb ? mb.signature : null, state.overview.settings.site_url, ref ? ref.toUpperCase() : null) + "<!-- " + Date.now() + " -->";
+    f.onload = () => { try { f.contentWindow.scrollTo(0, y); } catch (e) {} };
   }
-  $("#composerPreviewBtn").addEventListener("click", () => showPreview($("#cPreview").hidden));
+  const schedulePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(renderPreview, 200); };
+  ["#cBody", "#cSubject"].forEach(sel => $(sel).addEventListener("input", schedulePreview));
+  ["#cFrom", "#cSig"].forEach(sel => $(sel).addEventListener("change", schedulePreview));
+
+  function applyRecipientView() {
+    const on = state.recipientView;
+    document.body.classList.toggle("rv-on", on);
+    $("#rvState").textContent = on ? "On" : "Off";
+    $("#rvToggle").setAttribute("aria-pressed", on);
+    $("#composerPreviewBtn").classList.toggle("on", on);
+    $("#composerPreviewBtn").setAttribute("aria-pressed", on);
+    document.querySelector(".composer").classList.toggle("split", on);
+    $("#cPreviewWrap").hidden = !on;
+    if (on) renderPreview();
+    if (state.current) renderThreadPane();
+  }
+  function setRecipientView(on) {
+    state.recipientView = on;
+    try { localStorage.setItem("thornhill.email.recipientView", on ? "1" : "0"); } catch (e) {}
+    applyRecipientView();
+    window.toast(on ? "Recipient view on — you'll see emails exactly as they arrive" : "Recipient view off");
+  }
+  $("#rvToggle").addEventListener("click", () => setRecipientView(!state.recipientView));
+  $("#composerPreviewBtn").addEventListener("click", () => setRecipientView(!state.recipientView));
+  // The side button shows whenever the Emailing Centre or the composer is open
+  function updateRvButton() {
+    const show = (!$("#emailView").hidden && state.ready) || !$("#composerWrap").hidden;
+    $("#rvToggle").hidden = !show;
+  }
+  document.addEventListener("thornhill:view", () => setTimeout(updateRvButton, 0));
+  applyRecipientView();
 
   const splitAddrs = v => String(v || "").split(/[,;\n]/).map(x => x.trim()).filter(Boolean);
   const EMAIL_RE = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]{2,}$/;

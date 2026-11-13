@@ -94,6 +94,17 @@ Staff can sign in with their **fingerprint, face or device PIN** (a passkey) ins
 - Quick sign-ins last 12 hours. **Thornhill Quick → Sign out of all Thornhill Quick sessions** ends them everywhere; remove lost devices there too.
 - Passkeys work on `thornhillcorporation.co.uk` and its sub-sites (e.g. `link-hub.`).
 
+### Thornhill ID (sign in to a PC or Mac with your phone)
+
+Most computers don't have a fingerprint reader, so computers can be approved from your phone instead:
+
+1. On the computer: **Sign in with Thornhill Quick → Use my phone**. A code and QR code appear.
+2. On your phone: scan the QR code (or open `thornhillcorporation.co.uk/id`), unlock your **Thornhill ID** with your fingerprint or face, check the code and tap **Approve**.
+3. The computer signs in straight away.
+
+Your phone needs Thornhill Quick set up first. Tip: add `/id` to your phone's home screen — it works like an app.
+Setup: run `supabase/quick-id.sql` in Supabase → SQL Editor (after `quick.sql`). No function changes are needed.
+
 Setup:
 1. Supabase → SQL Editor → run `supabase/quick.sql`.
 2. Supabase → Edge Functions → Deploy a new function → Via Editor → name it `quick` → paste `supabase/functions/quick/index.ts` → Deploy → turn **Verify JWT off**. No secrets are needed.

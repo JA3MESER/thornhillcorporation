@@ -233,6 +233,32 @@
       if (!r || !r.ok) throw notAuthorised();
       return r;
     },
+    /* ---- Thornhill ID: sign a computer in with your phone ---- */
+    async quickLinkStart(label) {
+      if (!LIVE) throw new Error("Thornhill ID needs Supabase to be connected.");
+      const r = await rpc("quick_link_start", { p_label: label });
+      if (!r || !r.ok) throw new Error((r && r.error) || "Couldn't start Thornhill ID sign-in.");
+      return r;
+    },
+    quickLinkPoll(id, secret) { return rpc("quick_link_poll", { p_id: id, p_secret: secret }); },
+    async quickLinkLookup(n, c, code) {
+      const r = await rpc("admin_quick_link_lookup", { p_name: n, p_code: c, p_link_code: code });
+      if (r && r.auth === false) throw notAuthorised();
+      if (!r || !r.ok) throw new Error((r && r.error) || "That code isn't valid.");
+      return r;
+    },
+    async quickLinkDecide(n, c, code, approve) {
+      const r = await rpc("admin_quick_link_decide", { p_name: n, p_code: c, p_link_code: code, p_approve: !!approve });
+      if (r && r.auth === false) throw notAuthorised();
+      if (!r || !r.ok) throw new Error((r && r.error) || "Couldn't complete that.");
+      return r;
+    },
+    async idCard(n, c) {
+      const r = await rpc("admin_id_card", { p_name: n, p_code: c });
+      if (!r || !r.ok) throw notAuthorised();
+      return r;
+    },
+
     /** End this sign-in (and optionally every Thornhill Quick sign-in for this admin) */
     signOut(n, c, everywhere) {
       if (!LIVE) return Promise.resolve();

@@ -1,0 +1,68 @@
+/* Thornhill Corporation — Thornhill ID (phone) */
+body.id-page { background: var(--bg-alt); min-height: 100vh; display: flex; flex-direction: column; }
+.id-top { display: flex; align-items: center; justify-content: space-between; padding: max(14px, env(safe-area-inset-top)) 18px 14px; background: var(--navy); color: #fff; }
+.id-top .brand { color: #fff; font-size: 1rem; }
+.id-top .brand small { color: #8d98b3; }
+.id-top .icon-btn { color: #fff; border-color: rgba(255,255,255,.3); }
+.id-main { flex: 1; width: 100%; max-width: 480px; margin: 0 auto; padding: 24px 18px 30px; }
+.id-locked { text-align: center; }
+.id-locked h1 { font-size: 1.7rem; margin: 22px 0 8px; }
+.id-locked p { margin-bottom: 20px; }
+.id-unlock { padding: 15px; font-size: 1rem; }
+.id-note { font-size: .84rem; color: var(--text-3); text-align: center; margin-top: 16px; }
+.id-note a { color: var(--accent); font-weight: 700; }
+
+/* The card */
+.id-card {
+  position: relative; overflow: hidden; color: #fff; padding: 20px 20px 16px; border-radius: 10px;
+  background: linear-gradient(135deg, #0b1736 0%, #13224a 55%, #1f4fd8 140%);
+  box-shadow: 0 18px 40px rgba(11, 23, 54, .28); aspect-ratio: 1.586; display: flex; flex-direction: column;
+}
+.idc-head { display: flex; align-items: center; gap: 10px; font-size: .72rem; font-weight: 800; letter-spacing: .2em; }
+.idc-head img { width: 30px; height: 30px; border-radius: 6px; }
+.idc-live { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: .66rem; letter-spacing: .14em; color: #8ef0b4; }
+.idc-live i { width: 7px; height: 7px; border-radius: 50%; background: #34c77b; animation: livePulse 1.4s ease-in-out infinite; }
+@keyframes livePulse { 50% { opacity: .25; } }
+.idc-body { display: flex; align-items: center; gap: 14px; margin-top: auto; }
+.idc-avatar { width: 54px; height: 54px; border-radius: 8px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); display: grid; place-items: center; font-weight: 800; font-size: 1.15rem; }
+.idc-name { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.idc-role { font-size: .82rem; color: #b7c0d6; font-weight: 600; }
+.idc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.idc-grid span { display: block; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: #8d98b3; }
+.idc-grid strong { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .95rem; }
+.idc-foot { margin-top: 10px; font-size: .66rem; color: #8d98b3; letter-spacing: .04em; }
+/* A moving sheen shows the card is live, not a screenshot */
+.idc-shine { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.14) 50%, transparent 65%); background-size: 250% 100%; animation: shine 3.5s linear infinite; }
+@keyframes shine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+.id-card.placeholder { max-width: 360px; margin: 0 auto; }
+.idc-lock { flex: 1; display: grid; place-items: center; color: rgba(255,255,255,.75); }
+.idc-lock svg { width: 64px; height: 64px; }
+
+.id-panel { background: var(--surface); border: 1px solid var(--border); padding: 20px; margin-top: 18px; }
+.id-panel h2 { font-size: 1.1rem; margin: 0 0 4px; }
+.id-panel > p { font-size: .9rem; margin-bottom: 14px; }
+.code-form { display: flex; gap: 8px; }
+.code-form input { flex: 1; min-width: 0; padding: 14px; font-size: 1.5rem; font-weight: 800; letter-spacing: .18em; text-align: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); text-transform: uppercase; }
+.code-form input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.id-panel .form-error { margin-top: 12px; }
+.confirm { margin-top: 16px; padding: 18px; border: 1px solid var(--accent); background: var(--accent-soft); text-align: center; }
+.confirm-ic { width: 48px; height: 48px; margin: 0 auto 10px; display: grid; place-items: center; background: var(--surface); color: var(--accent); border-radius: 6px; }
+.confirm-ic svg { width: 26px; height: 26px; }
+.confirm p { margin: 0 0 4px; color: var(--text); font-size: 1.02rem; }
+.confirm small { display: block; color: var(--text-3); font-size: .8rem; }
+.confirm small.warn { margin-top: 8px; color: var(--warning); font-weight: 600; }
+.confirm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.confirm-actions .btn { padding: 14px; }
+.done { margin-top: 16px; padding: 16px; border-left: 3px solid; }
+.done.ok { border-color: var(--success); background: color-mix(in srgb, var(--success) 10%, transparent); }
+.done.no { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent); }
+.done strong { display: block; }
+.done span { font-size: .9rem; color: var(--text-2); }
+.recent { list-style: none; margin: 10px 0 0; padding: 0; }
+.recent li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+.recent li:first-child { border-top: 0; }
+.recent b { display: block; font-size: .9rem; }
+.recent small { color: var(--text-3); font-size: .78rem; }
+.r-side { text-align: right; font-size: .78rem; color: var(--text-3); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.r-side i.on { font-style: normal; font-weight: 700; color: var(--success); }
+.id-footer { text-align: center; padding: 18px 18px max(18px, env(safe-area-inset-bottom)); display: grid; gap: 10px; justify-items: center; color: var(--text-3); font-size: .74rem; }

@@ -1,0 +1,14 @@
+{
+  "name": "Thornhill ID",
+  "short_name": "Thornhill ID",
+  "description": "Your Thornhill Corporation staff ID. Approve sign-ins with your fingerprint or face.",
+  "start_url": "/id",
+  "scope": "/id",
+  "display": "standalone",
+  "background_color": "#0b1736",
+  "theme_color": "#0b1736",
+  "icons": [
+    { "src": "/assets/img/icon-dark.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/img/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
