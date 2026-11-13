@@ -96,6 +96,8 @@
   }
 
   function logout() {
+    // End the sign-in on the server too (matters for Thornhill Quick sessions)
+    if (session) Store.signOut(session.name, session.code, false);
     session = null; items = []; selectedId = null;
     clearSession(); clearTimeout(idleTimer);
     document.dispatchEvent(new Event("thornhill:logout"));
@@ -154,6 +156,9 @@
 
   // Let other admin modules (documents) use the session and sign out on expiry
   window.ThornhillAdmin = {
+    // Used by Thornhill Quick to sign in without the special code
+    startSession: s => { session = s; saveSession(session); enterDashboard(); },
+    signOutAll: () => { if (session) Store.signOut(session.name, session.code, true).then(() => { logout(); window.toast("Signed out of all Thornhill Quick devices"); }); },
     showView: n => showView(n),
     openEnquiry: id => { showView("enquiries"); if (items.some(i => i.id === id)) renderDetail(id); else refresh().then(() => renderDetail(id)); },
     refreshEnquiries: () => refresh(true),

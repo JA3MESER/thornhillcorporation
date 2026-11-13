@@ -84,6 +84,22 @@ In the admin panel, open the **Documents** tab and click **New document**. Paste
 
 ---
 
+## Thornhill Quick (fast staff sign-in)
+
+Staff can sign in with their **fingerprint, face or device PIN** (a passkey) instead of typing their special code.
+
+- Sign in once with your name and code, then click **Set up on this device** (or **Thornhill Quick** in the top bar).
+- Next time, click **Sign in with Thornhill Quick** under the normal sign-in form.
+- Only devices registered by a signed-in staff member are accepted. Fingerprints and faces never leave the device.
+- Quick sign-ins last 12 hours. **Thornhill Quick → Sign out of all Thornhill Quick sessions** ends them everywhere; remove lost devices there too.
+- Passkeys work on `thornhillcorporation.co.uk` and its sub-sites (e.g. `link-hub.`).
+
+Setup:
+1. Supabase → SQL Editor → run `supabase/quick.sql`.
+2. Supabase → Edge Functions → Deploy a new function → Via Editor → name it `quick` → paste `supabase/functions/quick/index.ts` → Deploy → turn **Verify JWT off**. No secrets are needed.
+
+---
+
 ## Emailing Centre
 
 Send and receive email from Thornhill addresses right inside the admin panel (**Emailing Centre** tab).

@@ -201,6 +201,44 @@
       return d;
     },
 
+    /* ======================= Thornhill Quick ======================= */
+
+    /** Call the "quick" Edge Function (passkey sign-in) */
+    async quickFunction(body) {
+      if (!LIVE) throw new Error("Thornhill Quick needs Supabase to be connected.");
+      const base = cfg.supabaseUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+      const key = cfg.supabaseAnonKey.trim();
+      const headers = { "Content-Type": "application/json", apikey: key };
+      if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key;
+      let res;
+      try { res = await fetch(base + "/functions/v1/quick", { method: "POST", headers, body: JSON.stringify(body) }); }
+      catch (e) { throw new Error("Couldn't reach Thornhill Quick. Check your connection."); }
+      let data = null;
+      try { data = await res.json(); } catch (e) {}
+      if (res.status === 401 && data && data.auth === false) throw notAuthorised();
+      if (res.status === 404) throw new Error("Thornhill Quick isn't switched on yet (the \"quick\" function isn't deployed).");
+      if (res.status === 401) throw new Error("Thornhill Quick is blocked. Turn off \"Verify JWT\" on the quick function.");
+      if (!data) throw new Error("Thornhill Quick returned an unexpected response.");
+      if (data.ok === false) throw new Error(data.error || "Thornhill Quick couldn't sign you in.");
+      return data;
+    },
+    async quickOverview(n, c) {
+      if (!LIVE) return { ok: true, devices: [], sessions: 0 };
+      const r = await rpc("admin_quick_overview", { p_name: n, p_code: c });
+      if (!r || !r.ok) throw notAuthorised();
+      return r;
+    },
+    async quickRemoveDevice(n, c, id) {
+      const r = await rpc("admin_quick_remove_device", { p_name: n, p_code: c, p_id: id });
+      if (!r || !r.ok) throw notAuthorised();
+      return r;
+    },
+    /** End this sign-in (and optionally every Thornhill Quick sign-in for this admin) */
+    signOut(n, c, everywhere) {
+      if (!LIVE) return Promise.resolve();
+      return rpc("admin_sign_out", { p_name: n, p_code: c, p_everywhere: !!everywhere }).catch(() => null);
+    },
+
     /* ======================= Emailing Centre ======================= */
     // Everything here needs Supabase (the "email" function sends through Resend).
 

@@ -30,7 +30,7 @@
 .mail-list-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; }
 .mail-list-head h2 { font-size: 1.15rem; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mail-search { margin: 0 14px 10px; position: relative; flex: none !important; min-width: 0 !important; }
-.mail-search input { padding: 10px 14px 10px 40px; border-radius: 999px; background: var(--bg-alt); }
+.mail-search input { padding: 10px 14px 10px 40px; border-radius: var(--pill); background: var(--bg-alt); }
 .mail-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-3); }
 .thread-list { flex: 1; overflow-y: auto; border-top: 1px solid var(--border); }
 .mail-more { margin: 10px auto 14px; }
@@ -44,7 +44,7 @@
 .t-top { display: flex; align-items: baseline; gap: 8px; }
 .t-who { flex: 1; min-width: 0; font-size: .9rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .thread.unread .t-who, .thread.unread .t-subj { font-weight: 800; }
-.t-count { font-size: .72rem; font-weight: 700; color: var(--text-3); background: var(--surface-2); border-radius: 999px; padding: 1px 7px; }
+.t-count { font-size: .72rem; font-weight: 700; color: var(--text-3); background: var(--surface-2); border-radius: var(--pill); padding: 1px 7px; }
 .t-time { font-size: .76rem; color: var(--text-3); white-space: nowrap; }
 .thread.unread .t-time { color: var(--accent); font-weight: 700; }
 .t-subj { font-size: .87rem; color: var(--text); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
@@ -55,7 +55,7 @@
 .tag-ref { display: inline-flex; align-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); border: 0; }
 .tag-ref.big { font-family: var(--font-body); font-size: .8rem; padding: 5px 10px; cursor: pointer; text-transform: capitalize; }
 .tag-ref.big:hover { background: var(--accent); color: #fff; }
-.mstatus { display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.mstatus { display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: var(--pill); white-space: nowrap; }
 .mstatus.s-sent { background: var(--surface-2); color: var(--text-2); }
 .mstatus.s-ok { background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); }
 .mstatus.s-warn { background: color-mix(in srgb, var(--warning) 14%, transparent); color: var(--warning); }
@@ -94,7 +94,7 @@
 .msg:not(.open) .msg-to { display: none; }
 .msg-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex: none; }
 .msg-right time { font-size: .76rem; color: var(--text-3); white-space: nowrap; }
-.mini-tag { font-size: .68rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--surface-2); color: var(--text-3); }
+.mini-tag { font-size: .68rem; font-weight: 700; padding: 1px 7px; border-radius: var(--pill); background: var(--surface-2); color: var(--text-3); }
 .msg-body { display: none; padding: 0 18px 18px 68px; }
 .msg.open .msg-body { display: block; }
 .msg-text { font-size: .94rem; line-height: 1.7; color: var(--text); overflow-wrap: anywhere; }
@@ -174,9 +174,9 @@ body.composing { overflow: hidden; }
 .composer-foot select { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--bg); font-size: .85rem; }
 .send-bar {
   position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 300; display: flex; align-items: center; gap: 18px;
-  background: var(--text); color: var(--bg); padding: 12px 14px 12px 22px; border-radius: 999px; box-shadow: var(--shadow-lg); font-weight: 600; font-size: .92rem;
+  background: var(--text); color: var(--bg); padding: 12px 14px 12px 22px; border-radius: var(--pill); box-shadow: var(--shadow-lg); font-weight: 600; font-size: .92rem;
 }
-.send-bar button { border: 0; background: none; color: #7aa5ff; font-weight: 800; cursor: pointer; padding: 6px 10px; border-radius: 999px; }
+.send-bar button { border: 0; background: none; color: #7aa5ff; font-weight: 800; cursor: pointer; padding: 6px 10px; border-radius: var(--pill); }
 [data-theme="dark"] .send-bar button { color: var(--blue-600); }
 .send-bar button:hover { background: rgba(127, 127, 127, .2); }
 
@@ -233,3 +233,11 @@ body.composing { overflow: hidden; }
   .read-head { padding: 14px 16px 12px; }
   .msgs { padding: 14px 12px 6px; }
 }
+
+/* PROFESSIONAL THEME (Nov 2026) — Emailing Centre */
+.mail-shell { border-radius: 0; }
+.mail-side button:not(.btn) { border-radius: 2px; }
+.thread.selected { box-shadow: inset 3px 0 0 var(--accent); }
+.msg, .setup-card, .m-item, .m-form, .q-item, .att, .em-row, .more-menu, .quick-reply button { border-radius: 0; }
+.composer-toolbar button, .composer-toolbar select, .file-btn { border-radius: 2px; }
+.send-bar { border-radius: 3px; }

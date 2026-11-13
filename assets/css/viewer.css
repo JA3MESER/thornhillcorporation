@@ -22,9 +22,15 @@ body.viewing { margin: 0; overflow: hidden; background: #525659; }
 .pub-doc:hover .go svg { transform: translateX(4px); }
 .docs-tools { display: flex; gap: 12px; margin-bottom: 24px; }
 .docs-tools .search { flex: 1; max-width: 420px; position: relative; }
-.docs-tools .search input { padding-left: 42px; border-radius: 999px; background: var(--surface); }
+.docs-tools .search input { padding-left: 42px; border-radius: var(--pill); background: var(--surface); }
 .docs-tools .search svg { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--text-3); }
 .docs-list .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
 .docs-list .empty-state strong { display: block; color: var(--text); font-size: 1.1rem; margin-bottom: 4px; }
 
 .nf { min-height: 100vh; display: grid; place-items: center; text-align: center; }
+
+/* PROFESSIONAL THEME (Nov 2026) */
+.pub-doc { border-radius: 0; }
+.pub-doc:hover { border-color: var(--accent); }
+.docs-list .empty-state { border-radius: 0; }
+.docs-tools .search input { border-radius: 2px; }
