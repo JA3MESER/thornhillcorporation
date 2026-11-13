@@ -56,6 +56,8 @@
     btn.textContent = "Sending…";
     try {
       const ref = await window.ThornhillStore.submitEnquiry(data);
+      // Send the automatic "we've received your enquiry" email (only if switched on in the Emailing Centre)
+      window.ThornhillStore.requestAck(ref);
       document.getElementById("successName").textContent = data.fullName.split(" ")[0];
       document.getElementById("successEmail").textContent = data.email;
       showSuccess(ref);

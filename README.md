@@ -84,6 +84,27 @@ In the admin panel, open the **Documents** tab and click **New document**. Paste
 
 ---
 
+## Emailing Centre
+
+Send and receive email from Thornhill addresses right inside the admin panel (**Emailing Centre** tab).
+
+- **Addresses:** shared ones like `support@thornhillcorporation.co.uk` (every admin can use them) and personal ones like `johndoe@…` (only that admin can send from or read them).
+- **Inbox, Sent, Starred, Archive**, search, and conversations grouped like Gmail. Replies from customers land in the same conversation.
+- **Reply to enquiries** from the enquiry itself: the email is saved with the enquiry, and you can mark it In progress or Resolved as you send. A customer's reply re-opens a resolved enquiry.
+- **Templates** with placeholders (`{{first_name}}`, `{{reference}}`…), **signatures**, **attachments** (up to 7 MB), **preview**, **Cc/Bcc**, **5-second undo send**, and **delivery tracking** (Delivered / Opened / Bounced).
+- **Automatic reply** to new Support enquiries with their reference number (optional, in Settings & setup).
+
+It uses **Resend** (free for up to 100 emails a day). One-time setup:
+
+1. **Database:** in Supabase → SQL Editor, run `supabase/email-part1.sql`, then `email-part2.sql`, then `email-part3.sql` (each in a new query).
+2. **Resend:** sign up at resend.com → Domains → add `thornhillcorporation.co.uk` → add the DNS records it shows at your domain provider → Verify. Turn on **Receiving** for the domain and add its MX record too (this sends all email for the domain to the Emailing Centre).
+3. **API key:** Resend → API Keys → Create (Full access). In Supabase → Edge Functions → Secrets, add `RESEND_API_KEY`.
+4. **Function:** Supabase → Edge Functions → Deploy a new function → Via Editor → name it `email` → paste `supabase/functions/email/index.ts` → Deploy → turn **Verify JWT off**.
+5. **Webhook (for receiving and delivery tracking):** Resend → Webhooks → Add → URL `https://YOUR-PROJECT.supabase.co/functions/v1/email` → select email.received, email.delivered, email.delivery_delayed, email.bounced, email.complained, email.opened → copy the signing secret into a Supabase secret named `RESEND_WEBHOOK_SECRET`.
+6. **Admin panel:** Emailing Centre → create `support@`, then open **Settings & setup** and check everything is green.
+
+---
+
 ## How replying works
 
 In the admin panel, open an enquiry and click **Reply via email** (opens your email app) or **Reply in Gmail**. The reply is pre-filled with the customer's address, a subject containing their reference number, and their original message quoted. Replying automatically moves a *New* enquiry to *In progress*.

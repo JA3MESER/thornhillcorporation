@@ -143,15 +143,20 @@
       b.classList.toggle("active", on); b.setAttribute("aria-selected", on);
     });
     $("#enquiriesView").hidden = name !== "enquiries";
+    const ev = $("#emailView"); if (ev) ev.hidden = name !== "email";
     try { sessionStorage.setItem("thornhill.admin.view", name); } catch (e) {}
     document.dispatchEvent(new CustomEvent("thornhill:view", { detail: name }));
   }
   document.querySelectorAll(".view-switch [data-view]").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+  try { if (sessionStorage.getItem("thornhill.admin.view") === "email") showView("email"); } catch (e) {}
   // Documents and redirects now live on the staff Link Hub
   document.querySelectorAll("[data-hub-link]").forEach(a => { a.href = window.ThornhillSites.hub(); });
 
   // Let other admin modules (documents) use the session and sign out on expiry
   window.ThornhillAdmin = {
+    showView: n => showView(n),
+    openEnquiry: id => { showView("enquiries"); if (items.some(i => i.id === id)) renderDetail(id); else refresh().then(() => renderDetail(id)); },
+    refreshEnquiries: () => refresh(true),
     session: () => session,
     expire: () => { logout(); window.toast("Please sign in again", "error"); }
   };
@@ -266,6 +271,10 @@
       <div class="detail-body">
         <h5>Message</h5>
         <div class="message-box">${esc(i.message)}</div>
+        <div class="enq-mail" id="enqMail" hidden>
+          <h5>Email conversation</h5>
+          <div class="enq-mail-list" id="enqMailList"></div>
+        </div>
         <div class="manage">
           <div class="field">
             <label for="statusSel">Status</label>
@@ -282,12 +291,18 @@
         </div>
       </div>
       <div class="actions">
-        <a class="btn btn-primary" id="replyBtn" href="${esc(mailto)}">
+        <button class="btn btn-primary" type="button" id="replyCentreBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 17 4 12l5-5"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
-          Reply via email
-        </a>
-        <a class="btn btn-ghost" id="gmailBtn" href="${esc(gmail)}" target="_blank" rel="noopener">Reply in Gmail</a>
-        <button class="btn btn-ghost" type="button" id="copyBtn">Copy email</button>
+          Reply
+        </button>
+        <div class="more-wrap">
+          <button class="btn btn-ghost" type="button" id="moreReplyBtn" aria-expanded="false">Other ways ▾</button>
+          <div class="more-menu" id="moreReplyMenu" hidden>
+            <a id="replyBtn" href="${esc(mailto)}">Reply in my email app</a>
+            <a id="gmailBtn" href="${esc(gmail)}" target="_blank" rel="noopener">Reply in Gmail</a>
+            <button type="button" id="copyBtn">Copy email address</button>
+          </div>
+        </div>
         <span class="spacer"></span>
         <button class="btn btn-dark" type="button" id="saveBtn">Save changes</button>
         <button class="btn btn-danger" type="button" id="deleteBtn" aria-label="Delete enquiry">Delete</button>
@@ -303,6 +318,15 @@
     });
     // Replying moves a "new" enquiry to "in progress" automatically
     const markReplied = () => { if (i.status === "new") save(i.id, "in_progress", $("#notes").value, true); };
+    // Reply from the Emailing Centre (sent from a Thornhill address, tracked, kept with the enquiry)
+    $("#replyCentreBtn").addEventListener("click", () => {
+      if (window.ThornhillEmail) window.ThornhillEmail.composeForEnquiry(i);
+      else window.location.href = mailto;
+    });
+    const moreBtn = $("#moreReplyBtn"), moreMenu = $("#moreReplyMenu");
+    moreBtn.addEventListener("click", e => { e.stopPropagation(); moreMenu.hidden = !moreMenu.hidden; moreBtn.setAttribute("aria-expanded", !moreMenu.hidden); });
+    document.addEventListener("click", () => { moreMenu.hidden = true; }, { once: true });
+    if (window.ThornhillEmail) window.ThornhillEmail.renderEnquiryHistory(i, $("#enqMail"), $("#enqMailList"));
     $("#replyBtn").addEventListener("click", markReplied);
     $("#gmailBtn").addEventListener("click", markReplied);
     $("#saveBtn").addEventListener("click", () => save(i.id, $("#statusSel").value, $("#notes").value));

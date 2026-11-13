@@ -201,6 +201,67 @@
       return d;
     },
 
+    /* ======================= Emailing Centre ======================= */
+    // Everything here needs Supabase (the "email" function sends through Resend).
+
+    async emailRpc(fn, name, code, args) {
+      if (!LIVE) throw new Error("Connect Supabase to use the Emailing Centre (see README).");
+      const r = await rpc(fn, Object.assign({ p_name: name, p_code: code }, args || {}));
+      if (r && (r.auth === false || r.ok === false && !r.error)) throw notAuthorised();
+      if (r && r.ok === false) throw new Error(r.error || "Something went wrong.");
+      return r;
+    },
+    emailOverview(n, c) { return this.emailRpc("admin_email_overview", n, c); },
+    listThreads(n, c, o) {
+      return this.emailRpc("admin_list_threads", n, c, {
+        p_folder: o.folder, p_mailbox: o.mailbox && o.mailbox !== "unrouted" ? o.mailbox : null,
+        p_unrouted: o.mailbox === "unrouted", p_search: o.search || null, p_limit: o.limit || 50, p_offset: o.offset || 0
+      });
+    },
+    getThread(n, c, id) { return this.emailRpc("admin_get_thread", n, c, { p_thread: id }); },
+    enquiryEmails(n, c, id) { return this.emailRpc("admin_enquiry_emails", n, c, { p_enquiry: id }); },
+    threadAction(n, c, ids, action) { return this.emailRpc("admin_thread_action", n, c, { p_threads: ids, p_action: action }); },
+    saveMailbox(n, c, m) {
+      return this.emailRpc("admin_save_mailbox", n, c, { p_id: m.id || null, p_address: m.address, p_display_name: m.display_name,
+        p_kind: m.kind, p_signature: m.signature || null, p_is_default: !!m.is_default });
+    },
+    deleteMailbox(n, c, id) { return this.emailRpc("admin_delete_mailbox", n, c, { p_id: id }); },
+    saveTemplate(n, c, t) { return this.emailRpc("admin_save_template", n, c, { p_id: t.id || null, p_tname: t.name, p_subject: t.subject || null, p_body: t.body }); },
+    deleteTemplate(n, c, id) { return this.emailRpc("admin_delete_template", n, c, { p_id: id }); },
+    saveEmailSettings(n, c, s) {
+      return this.emailRpc("admin_save_email_settings", n, c, { p_domain: s.domain, p_site_url: s.site_url,
+        p_auto_ack: !!s.auto_ack, p_ack_mailbox: s.ack_mailbox_id || null, p_ack_template: s.ack_template_id || null });
+    },
+
+    /** Call the "email" Edge Function (send / status / ack) */
+    async emailFunction(body) {
+      if (!LIVE) throw new Error("Connect Supabase to use the Emailing Centre (see README).");
+      const base = cfg.supabaseUrl.trim().replace(/\/+$/, "").replace(/\/rest\/v1$/i, "");
+      const key = cfg.supabaseAnonKey.trim();
+      const headers = { "Content-Type": "application/json", apikey: key };
+      if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key;
+      let res;
+      try {
+        res = await fetch(base + "/functions/v1/email", { method: "POST", headers, body: JSON.stringify(body) });
+      } catch (e) {
+        throw new Error("Couldn't reach the email service. Check that the \"email\" function is deployed with Verify JWT turned off.");
+      }
+      let data = null;
+      try { data = await res.json(); } catch (e) {}
+      if (res.status === 401 && data && data.auth === false) throw notAuthorised();
+      if (res.status === 404) throw new Error("The \"email\" function isn't deployed in Supabase yet.");
+      if (res.status === 401) throw new Error("The email function is blocking requests. Turn off \"Verify JWT\" in its settings.");
+      if (!data) throw new Error("The email service returned an unexpected response (" + res.status + ").");
+      if (data.ok === false && data.error) throw new Error(data.error);
+      return data;
+    },
+
+    /** Public: ask for the automatic "we've received your enquiry" email (only sends if switched on) */
+    requestAck(reference) {
+      if (!LIVE) return Promise.resolve(null);
+      return this.emailFunction({ action: "ack", reference }).catch(() => null);
+    },
+
     /* ======================= Redirects ======================= */
 
     async listRedirects(name, code) {
