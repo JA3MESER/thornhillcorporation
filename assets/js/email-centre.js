@@ -358,7 +358,7 @@
     const mb = myMailboxes().find(x => x.id === m.mailbox_id) || defaultMailbox();
     return {
       title: all ? "Reply all" : "Reply", mailboxId: mb && mb.id, to, cc, subject: reSubject(m.subject),
-      body: quoteOf(m), threadId: m.thread_id, replyToId: m.id,
+      body: "", quote: quoteOf(m), threadId: m.thread_id, replyToId: m.id,
       enquiry: state.current && state.current.enquiry, recipientName: m.direction === "in" ? m.from_name : ""
     };
   }
@@ -389,7 +389,7 @@
       }
       const mb2 = defaultMailbox();
       ctx.mailboxId = mb2.id;
-      ctx.body = (tpl ? fill(tpl.body, varsFor(ctx, mb2)) : `Hi ${firstName(q.full_name)},\n\n`) + ctx.quote;
+      ctx.body = tpl ? fill(tpl.body, varsFor(ctx, mb2)) : `Hi ${firstName(q.full_name)},\n\n`;
       // Continue the existing conversation for this enquiry, if there is one
       try {
         const s = session();
@@ -428,6 +428,12 @@
     $("#cCcRow").hidden = $("#cBccRow").hidden = !(c.cc && c.cc.length) && !(c.bcc && c.bcc.length);
     $("#cSubject").value = c.subject || "";
     $("#cBody").value = c.body || "";
+    // Replies start fresh; tick "Include previous messages" to quote the conversation underneath
+    const hasQuote = !!(c.quote && c.quote.trim());
+    $("#cQuoteRow").hidden = !hasQuote;
+    $("#cQuote").checked = hasQuote && (c.includeQuote != null ? c.includeQuote : quotePref());
+    $("#cQuoteText").textContent = hasQuote ? c.quote.trim().split("\n").map(l => l.replace(/^> ?/, "")).join("\n") : "";
+    $("#cQuoteBox").hidden = !$("#cQuote").checked;
     $("#cSig").checked = true;
     $("#cTemplate").innerHTML = '<option value="">Insert template…</option>' + state.overview.templates.map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
     const enq = $("#composerEnquiry"), st = $("#cStatus");
@@ -545,7 +551,7 @@
     let y = 0;
     try { y = f.contentWindow.scrollY; } catch (e) {}
     // A unique marker forces the frame to redraw every time (fixes the blank preview when toggled)
-    f.srcdoc = brandedHtml($("#cBody").value, $("#cSig").checked && mb ? mb.signature : null, state.overview.settings.site_url, ref ? ref.toUpperCase() : null) + "<!-- " + Date.now() + " -->";
+    f.srcdoc = brandedHtml(fullBody(), $("#cSig").checked && mb ? mb.signature : null, state.overview.settings.site_url, ref ? ref.toUpperCase() : null) + "<!-- " + Date.now() + " -->";
     f.onload = () => { try { f.contentWindow.scrollTo(0, y); } catch (e) {} };
   }
   const schedulePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(renderPreview, 200); };
@@ -580,6 +586,20 @@
   document.addEventListener("thornhill:view", () => setTimeout(updateRvButton, 0));
   applyRecipientView();
 
+  /* ---------- Previous messages: include or start fresh ---------- */
+  const QUOTE_KEY = "thornhill.email.includeQuote";
+  function quotePref() { try { return localStorage.getItem(QUOTE_KEY) === "1"; } catch (e) { return false; } }
+  function fullBody() {
+    const typed = $("#cBody").value.replace(/\s+$/, "");
+    const c = state.compose;
+    return c && c.quote && $("#cQuote").checked ? typed + "\n\n" + c.quote.trim() : typed;
+  }
+  $("#cQuote").addEventListener("change", () => {
+    $("#cQuoteBox").hidden = !$("#cQuote").checked;
+    try { localStorage.setItem(QUOTE_KEY, $("#cQuote").checked ? "1" : "0"); } catch (e) {}
+    schedulePreview();
+  });
+
   const splitAddrs = v => String(v || "").split(/[,;\n]/).map(x => x.trim()).filter(Boolean);
   const EMAIL_RE = /^[^\s@<>(),;:"]+@[^\s@<>(),;:"]+\.[^\s@<>(),;:"]{2,}$/;
   const bare = a => a.replace(/^.*<([^>]+)>$/, "$1").trim();
@@ -599,11 +619,11 @@
     const c = state.compose;
     const payload = {
       action: "send", mailbox_id: $("#cFrom").value, to, cc, bcc,
-      subject: $("#cSubject").value.trim(), body: $("#cBody").value, include_signature: $("#cSig").checked,
+      subject: $("#cSubject").value.trim(), body: fullBody(), include_signature: $("#cSig").checked,
       attachments: state.attachments.slice(), thread_id: c.threadId || null, reply_to_id: c.replyToId || null,
       enquiry_id: c.enquiry ? c.enquiry.id : null, set_enquiry_status: c.enquiry ? ($("#cStatus").value || null) : null
     };
-    const snapshot = Object.assign({}, c, { to, cc, bcc, subject: payload.subject, body: payload.body, mailboxId: payload.mailbox_id });
+    const snapshot = Object.assign({}, c, { to, cc, bcc, subject: payload.subject, body: $("#cBody").value, includeQuote: $("#cQuote").checked, mailboxId: payload.mailbox_id });
     const attSnap = state.attachments.slice();
     closeComposer(true);
     undoToast(payload, snapshot, attSnap);

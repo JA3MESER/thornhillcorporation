@@ -276,3 +276,8 @@ body.rv-on .rv-state { background: #fff; color: var(--accent); }
 }
 .rv-note { font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
 .msg-html.out { background: #f1f4f9; border: 1px solid var(--border); border-radius: 0; height: 520px; }
+
+/* Previous messages (shown only when "Include previous messages" is ticked) */
+.quote-box { margin: 0 20px 10px; border: 1px solid var(--border); border-left: 3px solid var(--text-3); background: var(--bg-alt); }
+.qb-head { padding: 6px 12px; font-size: .74rem; font-weight: 700; letter-spacing: .04em; color: var(--text-3); border-bottom: 1px solid var(--border); }
+.qb-text { padding: 10px 12px; max-height: 120px; overflow: auto; white-space: pre-wrap; font-size: .84rem; color: var(--text-3); }

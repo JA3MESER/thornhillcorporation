@@ -14,9 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261113e">
-  <link rel="stylesheet" href="assets/css/email.css?v=20261113e">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20261113e">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261113f">
+  <link rel="stylesheet" href="assets/css/email.css?v=20261113f">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20261113f">
 </head>
 <body class="admin">
 
@@ -296,9 +296,14 @@
           <iframe id="cPreview" title="What the recipient will see" sandbox="allow-same-origin"></iframe>
         </div>
       </div>
+      <div class="quote-box" id="cQuoteBox" hidden>
+        <div class="qb-head">Previous messages — will be added below your reply</div>
+        <div class="qb-text" id="cQuoteText"></div>
+      </div>
       <div class="attach-list" id="cAttachList"></div>
       <div class="composer-foot">
         <label class="check"><input type="checkbox" id="cSig" checked> Add signature</label>
+        <label class="check" id="cQuoteRow" hidden><input type="checkbox" id="cQuote"> Include previous messages</label>
         <select id="cStatus" hidden aria-label="Enquiry status after sending">
           <option value="in_progress">Then mark enquiry: In progress</option>
           <option value="resolved">Then mark enquiry: Resolved</option>
@@ -374,12 +379,12 @@
     </div>
   </div>
 
-  <script src="assets/js/config.js?v=20261113e"></script>
-  <script src="assets/js/store.js?v=20261113e"></script>
-  <script src="assets/js/main.js?v=20261113e"></script>
-  <script src="assets/js/email-centre.js?v=20261113e"></script>
-  <script src="assets/js/qr.js?v=20261113e"></script>
-  <script src="assets/js/admin.js?v=20261113e"></script>
-  <script src="assets/js/quick.js?v=20261113e"></script>
+  <script src="assets/js/config.js?v=20261113f"></script>
+  <script src="assets/js/store.js?v=20261113f"></script>
+  <script src="assets/js/main.js?v=20261113f"></script>
+  <script src="assets/js/email-centre.js?v=20261113f"></script>
+  <script src="assets/js/qr.js?v=20261113f"></script>
+  <script src="assets/js/admin.js?v=20261113f"></script>
+  <script src="assets/js/quick.js?v=20261113f"></script>
 </body>
 </html>
