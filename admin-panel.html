@@ -14,9 +14,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261113f">
-  <link rel="stylesheet" href="assets/css/email.css?v=20261113f">
-  <link rel="stylesheet" href="assets/css/admin.css?v=20261113f">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261114a">
+  <link rel="stylesheet" href="assets/css/email.css?v=20261114a">
+  <link rel="stylesheet" href="assets/css/admin.css?v=20261114a">
+  <link rel="stylesheet" href="assets/css/legal-admin.css?v=20261114a">
 </head>
 <body class="admin">
 
@@ -138,6 +139,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
             Enquiries <span class="count-badge" id="newBadge" hidden></span>
           </button>
+          <button type="button" role="tab" data-view="legal" aria-selected="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M5 21h14M3 7h18"/><path d="m6 7-3 7a3 3 0 0 0 6 0L6 7zM18 7l-3 7a3 3 0 0 0 6 0l-3-7z"/></svg>
+            Legal Cases <span class="count-badge" id="legalBadge" hidden></span>
+          </button>
           <button type="button" role="tab" data-view="email" aria-selected="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>
             Emailing Centre <span class="count-badge" id="mailBadge" hidden></span>
@@ -153,7 +158,7 @@
         <div class="dash-head">
           <div>
             <h1 id="greeting">Welcome back</h1>
-            <p>Here's what's come in through the support centre.</p>
+            <p id="enqIntro">Here's what's come in through the support centre.</p>
           </div>
           <div style="display:flex; gap:10px; flex-wrap: wrap;">
             <button class="btn btn-ghost btn-sm" id="exportBtn" type="button">
@@ -169,17 +174,17 @@
 
         <div class="stats">
           <div class="stat"><span><i class="pip" style="background: var(--text-3)"></i>Total</span><strong id="statTotal">0</strong></div>
-          <div class="stat"><span><i class="pip" style="background: var(--accent)"></i>New</span><strong id="statNew">0</strong></div>
-          <div class="stat"><span><i class="pip" style="background: var(--warning)"></i>In progress</span><strong id="statProgress">0</strong></div>
-          <div class="stat"><span><i class="pip" style="background: var(--success)"></i>Resolved</span><strong id="statResolved">0</strong></div>
+          <div class="stat"><span><i class="pip" style="background: var(--accent)"></i><b data-label="new">New</b></span><strong id="statNew">0</strong></div>
+          <div class="stat"><span><i class="pip" style="background: var(--warning)"></i><b data-label="in_progress">In progress</b></span><strong id="statProgress">0</strong></div>
+          <div class="stat"><span><i class="pip" style="background: var(--success)"></i><b data-label="resolved">Resolved</b></span><strong id="statResolved">0</strong></div>
         </div>
 
         <div class="toolbar">
           <div class="tabs" role="tablist" id="tabs">
             <button class="active" data-filter="all" type="button">All<span class="c" data-count="all"></span></button>
-            <button data-filter="new" type="button">New<span class="c" data-count="new"></span></button>
-            <button data-filter="in_progress" type="button">In progress<span class="c" data-count="in_progress"></span></button>
-            <button data-filter="resolved" type="button">Resolved<span class="c" data-count="resolved"></span></button>
+            <button data-filter="new" type="button"><b data-label="new">New</b><span class="c" data-count="new"></span></button>
+            <button data-filter="in_progress" type="button"><b data-label="in_progress">In progress</b><span class="c" data-count="in_progress"></span></button>
+            <button data-filter="resolved" type="button"><b data-label="resolved">Resolved</b><span class="c" data-count="resolved"></span></button>
           </div>
           <div class="search field">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -379,12 +384,12 @@
     </div>
   </div>
 
-  <script src="assets/js/config.js?v=20261113f"></script>
-  <script src="assets/js/store.js?v=20261113f"></script>
-  <script src="assets/js/main.js?v=20261113f"></script>
-  <script src="assets/js/email-centre.js?v=20261113f"></script>
-  <script src="assets/js/qr.js?v=20261113f"></script>
-  <script src="assets/js/admin.js?v=20261113f"></script>
-  <script src="assets/js/quick.js?v=20261113f"></script>
+  <script src="assets/js/config.js?v=20261114a"></script>
+  <script src="assets/js/store.js?v=20261114a"></script>
+  <script src="assets/js/main.js?v=20261114a"></script>
+  <script src="assets/js/email-centre.js?v=20261114a"></script>
+  <script src="assets/js/qr.js?v=20261114a"></script>
+  <script src="assets/js/admin.js?v=20261114a"></script>
+  <script src="assets/js/quick.js?v=20261114a"></script>
 </body>
 </html>

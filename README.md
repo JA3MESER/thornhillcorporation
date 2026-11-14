@@ -139,3 +139,10 @@ In the admin panel, open an enquiry and click **Reply via email** (opens your em
 ---
 
 Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.
+
+## Legal Enquiry Form
+
+- Public page: **/legal** (linked in the top menu, footer and the Legal Aid card on the homepage).
+- Run `supabase/legal.sql` once in Supabase → SQL Editor. It adds a `kind` and `legal` column to `enquiries`, the `submit_legal_enquiry` function and a "Legal enquiry reply" email template.
+- Submitted forms appear in the admin panel under **Legal Cases** (statuses: Received, Under review, Closed). Reply from there through the Emailing Centre; if you have a `legal@` address it is used automatically.
+- Legal Advisors are added the same way as any staff login (`insert into public.admins …`).

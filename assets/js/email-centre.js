@@ -371,11 +371,17 @@
 
   function composeForEnquiry(q) {
     const mb = defaultMailbox();
-    const tpl = state.overview && state.overview.templates.find(t => /enquiry reply/i.test(t.name));
+    const isLegal = q.kind === "legal";
+    // Legal cases send from a legal@ address (if there is one) and use the legal reply template
+    const pickMailbox = () => (isLegal && myMailboxes().find(m => /^legal/i.test(m.address))) || defaultMailbox();
+    const findTpl = () => state.overview && (
+      (isLegal && state.overview.templates.find(t => /legal enquiry reply/i.test(t.name))) ||
+      state.overview.templates.find(t => /^enquiry reply/i.test(t.name)) ||
+      state.overview.templates.find(t => /enquiry reply/i.test(t.name) && !/legal/i.test(t.name)));
     const subj = `Re: ${q.subject} [${q.reference}]`;
     const ctx = {
-      title: "Reply to " + q.full_name, mailboxId: mb && mb.id, to: [q.email], subject: subj,
-      enquiry: { id: q.id, reference: q.reference, full_name: q.full_name, email: q.email, subject: q.subject, status: q.status },
+      title: (isLegal ? "Legal case reply to " : "Reply to ") + q.full_name, mailboxId: mb && mb.id, to: [q.email], subject: subj,
+      enquiry: { id: q.id, reference: q.reference, kind: q.kind || "support", full_name: q.full_name, email: q.email, subject: q.subject, status: q.status },
       body: "", recipientName: q.full_name,
       quote: `\n\n> ${q.full_name} wrote on ${when(q.created_at, true)}:\n` + String(q.message).split("\n").map(l => "> " + l).join("\n")
     };
@@ -387,9 +393,9 @@
         window.toast(state.ready ? "Create an email address first, e.g. support@." : "Finish setting up the Emailing Centre first.", "error");
         return;
       }
-      const mb2 = defaultMailbox();
+      const mb2 = pickMailbox(), tpl = findTpl();
       ctx.mailboxId = mb2.id;
-      ctx.body = tpl ? fill(tpl.body, varsFor(ctx, mb2)) : `Hi ${firstName(q.full_name)},\n\n`;
+      ctx.body = tpl ? fill(tpl.body, varsFor(ctx, mb2)) : (isLegal ? `Dear ${q.full_name},\n\n` : `Hi ${firstName(q.full_name)},\n\n`);
       // Continue the existing conversation for this enquiry, if there is one
       try {
         const s = session();
@@ -439,7 +445,11 @@
     const enq = $("#composerEnquiry"), st = $("#cStatus");
     if (c.enquiry) {
       enq.hidden = false;
-      enq.innerHTML = `<span class="tag-ref">${esc(c.enquiry.reference)}</span> Replying to <b>${esc(c.enquiry.full_name)}</b>'s enquiry “${esc(c.enquiry.subject)}”. This email will be saved with the enquiry.`;
+      const lg = c.enquiry.kind === "legal", w = lg ? "case" : "enquiry";
+      enq.innerHTML = `<span class="tag-ref">${esc(c.enquiry.reference)}</span> Replying to <b>${esc(c.enquiry.full_name)}</b>'s ${lg ? "legal case" : "enquiry"} “${esc(c.enquiry.subject)}”. This email will be saved with the ${w}.`;
+      const opts = lg ? ["Then mark case: Under review", "Then mark case: Closed", "Then leave case status as it is"]
+                      : ["Then mark enquiry: In progress", "Then mark enquiry: Resolved", "Then leave enquiry status as it is"];
+      [...st.options].forEach((o, n) => { o.textContent = opts[n]; });
       st.hidden = false; st.value = "in_progress";
     } else { enq.hidden = true; st.hidden = true; }
     $("#composerError").classList.remove("show");
