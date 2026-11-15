@@ -63,7 +63,7 @@
 <tr><td style="background:#2563eb;height:4px;line-height:4px;font-size:0">&nbsp;</td></tr>
 <tr><td style="background:#ffffff;padding:32px 28px 24px;font-size:15px;line-height:1.65;color:#1f2430">${formatBody(body)}${sig}</td></tr>
 <tr><td style="background:#ffffff;border-radius:0 0 16px 16px;padding:0 28px 26px">${ref}</td></tr>
-<tr><td style="padding:18px 28px;text-align:center;color:#7a8396;font-size:12px;line-height:1.6"><span style="color:#2563eb;font-weight:600">${esc(site.replace(/^https?:\/\//, ""))}</span><br>Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.</td></tr>
+<tr><td style="padding:18px 28px;text-align:center;color:#7a8396;font-size:12px;line-height:1.6"><span style="color:#2563eb;font-weight:600">${esc(site.replace(/^https?:\/\//, ""))}</span><br>Thornhill Corporation · United Kingdom · <a href="${esc(site.replace(/\/+$/, ""))}/privacy" style="color:#7a8396">Privacy Notice</a><br>We will never ask for your Roblox password or 2-Step Verification codes.<br>Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.</td></tr>
 </table></td></tr></table></body></html>`;
   }
 
@@ -371,16 +371,16 @@
 
   function composeForEnquiry(q) {
     const mb = defaultMailbox();
-    const isLegal = q.kind === "legal";
-    // Legal cases send from a legal@ address (if there is one) and use the legal reply template
-    const pickMailbox = () => (isLegal && myMailboxes().find(m => /^legal/i.test(m.address))) || defaultMailbox();
+    const isAdvice = q.kind === "advice";
+    // Roblox Advice replies send from an advice@ or roblox@ address (if there is one) and use the advice template
+    const pickMailbox = () => (isAdvice && myMailboxes().find(m => /^(advice|roblox)/i.test(m.address))) || defaultMailbox();
     const findTpl = () => state.overview && (
-      (isLegal && state.overview.templates.find(t => /legal enquiry reply/i.test(t.name))) ||
+      (isAdvice && state.overview.templates.find(t => /roblox advice reply/i.test(t.name))) ||
       state.overview.templates.find(t => /^enquiry reply/i.test(t.name)) ||
-      state.overview.templates.find(t => /enquiry reply/i.test(t.name) && !/legal/i.test(t.name)));
+      state.overview.templates.find(t => /enquiry reply/i.test(t.name)));
     const subj = `Re: ${q.subject} [${q.reference}]`;
     const ctx = {
-      title: (isLegal ? "Legal case reply to " : "Reply to ") + q.full_name, mailboxId: mb && mb.id, to: [q.email], subject: subj,
+      title: (isAdvice ? "Roblox Advice reply to " : "Reply to ") + q.full_name, mailboxId: mb && mb.id, to: [q.email], subject: subj,
       enquiry: { id: q.id, reference: q.reference, kind: q.kind || "support", full_name: q.full_name, email: q.email, subject: q.subject, status: q.status },
       body: "", recipientName: q.full_name,
       quote: `\n\n> ${q.full_name} wrote on ${when(q.created_at, true)}:\n` + String(q.message).split("\n").map(l => "> " + l).join("\n")
@@ -395,7 +395,7 @@
       }
       const mb2 = pickMailbox(), tpl = findTpl();
       ctx.mailboxId = mb2.id;
-      ctx.body = tpl ? fill(tpl.body, varsFor(ctx, mb2)) : (isLegal ? `Dear ${q.full_name},\n\n` : `Hi ${firstName(q.full_name)},\n\n`);
+      ctx.body = tpl ? fill(tpl.body, varsFor(ctx, mb2)) : `Hi ${firstName(q.full_name)},\n\n`;
       // Continue the existing conversation for this enquiry, if there is one
       try {
         const s = session();
@@ -445,9 +445,9 @@
     const enq = $("#composerEnquiry"), st = $("#cStatus");
     if (c.enquiry) {
       enq.hidden = false;
-      const lg = c.enquiry.kind === "legal", w = lg ? "case" : "enquiry";
-      enq.innerHTML = `<span class="tag-ref">${esc(c.enquiry.reference)}</span> Replying to <b>${esc(c.enquiry.full_name)}</b>'s ${lg ? "legal case" : "enquiry"} “${esc(c.enquiry.subject)}”. This email will be saved with the ${w}.`;
-      const opts = lg ? ["Then mark case: Under review", "Then mark case: Closed", "Then leave case status as it is"]
+      const lg = c.enquiry.kind === "advice", w = lg ? "request" : "enquiry";
+      enq.innerHTML = `<span class="tag-ref">${esc(c.enquiry.reference)}</span> Replying to <b>${esc(c.enquiry.full_name)}</b>'s ${lg ? "Roblox Advice request" : "enquiry"} “${esc(c.enquiry.subject)}”. This email will be saved with the ${w}.`;
+      const opts = lg ? ["Then mark request: Being reviewed", "Then mark request: Answered", "Then leave request status as it is"]
                       : ["Then mark enquiry: In progress", "Then mark enquiry: Resolved", "Then leave enquiry status as it is"];
       [...st.options].forEach((o, n) => { o.textContent = opts[n]; });
       st.hidden = false; st.value = "in_progress";

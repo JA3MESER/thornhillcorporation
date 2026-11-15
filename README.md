@@ -140,9 +140,16 @@ In the admin panel, open an enquiry and click **Reply via email** (opens your em
 
 Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.
 
-## Legal Enquiry Form
+## Roblox Advice
 
-- Public page: **/legal** (linked in the top menu, footer and the Legal Aid card on the homepage).
-- Run `supabase/legal.sql` once in Supabase → SQL Editor. It adds a `kind` and `legal` column to `enquiries`, the `submit_legal_enquiry` function and a "Legal enquiry reply" email template.
-- Submitted forms appear in the admin panel under **Legal Cases** (statuses: Received, Under review, Closed). Reply from there through the Emailing Centre; if you have a `legal@` address it is used automatically.
-- Legal Advisors are added the same way as any staff login (`insert into public.admins …`).
+- Public page: **/roblox-advice** (top menu, footer and the Roblox Advice card on the homepage). Available to UK residents only.
+- Requests appear in the admin panel under **Roblox Advice** (statuses: Received, Being reviewed, Answered) for a Roblox Developer to review and reply to through the Emailing Centre. An `advice@` or `roblox@` address is used automatically if you have one.
+- Database: run `supabase/roblox-advice.sql` once. It converts any old legal-form records, adds `submit_roblox_advice`, the "Roblox advice reply" template, the security lock-down and data retention.
+
+## Privacy, security and data retention
+
+- **/privacy** (Privacy Notice) and **/terms** (Terms of Use) are linked in every footer and on every form.
+- Every database table has row-level security and no public access; the website can only call specific functions. Internal `_` functions can't be called from outside.
+- Forms are limited to 3 per email address per hour (100 per hour overall) to stop spam.
+- Retention runs automatically when an admin signs in: enquiries/advice requests are deleted 12 months after they're resolved (24 months max), emails after 24 months, sign-in records after 30 days. Update the Privacy Notice if you change these periods.
+- To answer a data request, search the person's email address in the admin panel; use Export CSV to give them a copy, or Delete to erase it.

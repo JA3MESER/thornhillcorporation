@@ -14,17 +14,18 @@
   let session = null;     // { name, code, display }
   let items = [];
   let filter = "all";
-  let kind = "support";   // "support" (Enquiries tab) or "legal" (Legal Cases tab)
+  let kind = "support";   // "support" (Enquiries tab) or "advice" (Roblox Advice tab)
   let query = "";
   let selectedId = null;
   let pendingDeleteId = null;
   let idleTimer = null;
 
   const SUPPORT_LABEL = { new: "New", in_progress: "In progress", resolved: "Resolved" };
-  const LEGAL_LABEL = { new: "Received", in_progress: "Under review", resolved: "Closed" };
+  const ADVICE_LABEL = { new: "Received", in_progress: "Being reviewed", resolved: "Answered" };
   let STATUS_LABEL = SUPPORT_LABEL;
-  const kindOf = i => (i && i.kind === "legal" ? "legal" : "support");
-  const labelsFor = i => (kindOf(i) === "legal" ? LEGAL_LABEL : SUPPORT_LABEL);
+  const kindOf = i => (i && i.kind === "advice" ? "advice" : "support");
+  const adv = i => (i && i.advice) || {};
+  const labelsFor = i => (kindOf(i) === "advice" ? ADVICE_LABEL : SUPPORT_LABEL);
 
   /* ---------- helpers ---------- */
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -122,6 +123,8 @@
     const h = new Date().getHours();
     $("#greeting").textContent = (h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + ", " + session.display.split(" ")[0];
     resetIdle();
+    // Data retention: quietly delete anything past its retention period (see the Privacy Notice)
+    Store.purgeExpired(session.name, session.code);
     document.dispatchEvent(new CustomEvent("thornhill:login", { detail: session }));
     await refresh();
   }
@@ -135,11 +138,11 @@
       const newCount = items.filter(i => i.status === "new").length;
       document.title = (newCount ? "(" + newCount + ") " : "") + "Administrator Panel — Thornhill Corporation";
       const supportNew = items.filter(i => i.status === "new" && kindOf(i) === "support").length;
-      const legalNew = items.filter(i => i.status === "new" && kindOf(i) === "legal").length;
+      const adviceNew = items.filter(i => i.status === "new" && kindOf(i) === "advice").length;
       const badge = $("#newBadge");
       badge.textContent = supportNew; badge.hidden = !supportNew;
-      const lb = $("#legalBadge");
-      if (lb) { lb.textContent = legalNew; lb.hidden = !legalNew; }
+      const lb = $("#adviceBadge");
+      if (lb) { lb.textContent = adviceNew; lb.hidden = !adviceNew; }
     } catch (ex) {
       if (ex.status === 401 || ex.status === 403 || /session|credential|not authori/i.test(ex.message)) {
         logout(); window.toast("Please sign in again", "error"); return;
@@ -153,8 +156,8 @@
       const on = b.dataset.view === name;
       b.classList.toggle("active", on); b.setAttribute("aria-selected", on);
     });
-    $("#enquiriesView").hidden = name !== "enquiries" && name !== "legal";
-    if (name === "enquiries" || name === "legal") setKind(name === "legal" ? "legal" : "support");
+    $("#enquiriesView").hidden = name !== "enquiries" && name !== "advice";
+    if (name === "enquiries" || name === "advice") setKind(name === "advice" ? "advice" : "support");
     const ev = $("#emailView"); if (ev) ev.hidden = name !== "email";
     try { sessionStorage.setItem("thornhill.admin.view", name); } catch (e) {}
     document.dispatchEvent(new CustomEvent("thornhill:view", { detail: name }));
@@ -163,19 +166,19 @@
   function setKind(k) {
     if (k === kind) return;
     kind = k;
-    STATUS_LABEL = k === "legal" ? LEGAL_LABEL : SUPPORT_LABEL;
+    STATUS_LABEL = k === "advice" ? ADVICE_LABEL : SUPPORT_LABEL;
     document.querySelectorAll("[data-label]").forEach(el => { el.textContent = STATUS_LABEL[el.dataset.label]; });
-    $("#enqIntro").textContent = k === "legal"
-      ? "Legal enquiry forms submitted through the Legal Department page."
+    $("#enqIntro").textContent = k === "advice"
+      ? "Roblox Advice requests, to be reviewed and answered by a Roblox Developer."
       : "Here's what's come in through the support centre.";
-    $("#search").placeholder = k === "legal" ? "Search name, email, subject, jurisdiction or case reference…" : "Search name, email, subject or reference…";
-    document.getElementById("enquiriesView").classList.toggle("legal-mode", k === "legal");
+    $("#search").placeholder = k === "advice" ? "Search name, email, subject, UK nation or reference…" : "Search name, email, subject or reference…";
+    document.getElementById("enquiriesView").classList.toggle("advice-mode", k === "advice");
     filter = "all";
     document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("active", x.dataset.filter === "all"));
     if (selectedId) closeDetail();
     if (session) render();
   }
-  try { const v = sessionStorage.getItem("thornhill.admin.view"); if (v === "email" || v === "legal") showView(v); } catch (e) {}
+  try { const v = sessionStorage.getItem("thornhill.admin.view"); if (v === "email" || v === "advice") showView(v); } catch (e) {}
   // Documents and redirects now live on the staff Link Hub
   document.querySelectorAll("[data-hub-link]").forEach(a => { a.href = window.ThornhillSites.hub(); });
 
@@ -186,7 +189,7 @@
     signOutAll: () => { if (session) Store.signOut(session.name, session.code, true).then(() => { logout(); window.toast("Signed out of all Thornhill Quick devices"); }); },
     showView: n => showView(n),
     openEnquiry: id => {
-      const go = () => { const i = items.find(x => x.id === id); showView(kindOf(i) === "legal" ? "legal" : "enquiries"); renderDetail(id); };
+      const go = () => { const i = items.find(x => x.id === id); showView(kindOf(i) === "advice" ? "advice" : "enquiries"); renderDetail(id); };
       if (items.some(i => i.id === id)) go(); else refresh().then(go);
     },
     refreshEnquiries: () => refresh(true),
@@ -227,8 +230,8 @@
     return ofKind().filter(i => {
       if (filter !== "all" && i.status !== filter) return false;
       if (!query) return true;
-      const L = i.legal || {};
-      return [i.full_name, i.email, i.subject, i.reference, i.category, i.message, L.priority, L.jurisdiction, L.notes].join(" ").toLowerCase().includes(query);
+      const L = adv(i);
+      return [i.full_name, i.email, i.subject, i.reference, i.category, i.message, L.priority, L.region || L.jurisdiction, L.notes].join(" ").toLowerCase().includes(query);
     });
   }
 
@@ -236,8 +239,8 @@
     const rows = visible();
     if (!rows.length) {
       listEl.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1z"/></svg><strong>' +
-        (ofKind().length ? (kind === "legal" ? "No matching cases" : "No matching enquiries") : (kind === "legal" ? "No legal cases yet" : "No enquiries yet")) + "</strong>" +
-        (ofKind().length ? "Try a different filter or search." : (kind === "legal" ? "Forms submitted on the Legal Enquiry Form page will appear here." : "New support enquiries will appear here.")) + "</div>";
+        (ofKind().length ? (kind === "advice" ? "No matching requests" : "No matching enquiries") : (kind === "advice" ? "No advice requests yet" : "No enquiries yet")) + "</strong>" +
+        (ofKind().length ? "Try a different filter or search." : (kind === "advice" ? "Requests sent from the Roblox Advice page will appear here." : "New support enquiries will appear here.")) + "</div>";
       return;
     }
     listEl.innerHTML = rows.map(i => `
@@ -246,8 +249,8 @@
         <div>
           <h4>${esc(i.full_name)}</h4>
           <p class="subj">${esc(i.subject)}</p>
-          ${kindOf(i) === "legal"
-            ? `<p class="prev"><span class="prio prio-${esc(String((i.legal || {}).priority || "").toLowerCase())}">${esc((i.legal || {}).priority || "—")}</span> ${esc((i.legal || {}).jurisdiction || "")} · ${esc(i.reference)}</p>`
+          ${kindOf(i) === "advice"
+            ? `<p class="prev"><span class="prio prio-${esc(String(adv(i).priority || "").toLowerCase())}">${esc(adv(i).priority || "—")}</span> ${esc(adv(i).region || adv(i).jurisdiction || "")} · ${esc(i.reference)}</p>`
             : `<p class="prev">${esc(i.category)} · ${esc(i.message.slice(0, 120))}</p>`}
         </div>
         <div class="meta">
@@ -287,15 +290,15 @@
     const gmail = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(i.email) + "&su=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
 
     const LBL = labelsFor(i);
-    const legal = kindOf(i) === "legal";
-    const L = i.legal || {};
-    const top = legal ? `
+    const isAdvice = kindOf(i) === "advice";
+    const L = adv(i);
+    const top = isAdvice ? `
       <div class="detail-head case-head">
         <button class="btn btn-ghost btn-sm close-detail" type="button" id="closeDetail">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Back to cases
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Back to requests
         </button>
         <div class="case-banner">
-          <div><span class="case-kicker">Legal Case File · Form LE-1</span><span class="ref">${esc(i.reference)}</span></div>
+          <div><span class="case-kicker">Roblox Advice Request</span><span class="ref">${esc(i.reference)}</span></div>
           <span class="status ${esc(i.status)}">${esc(LBL[i.status])}</span>
         </div>
         <h2>${esc(i.subject)}</h2>
@@ -306,13 +309,13 @@
       </div>
       <div class="facts case-facts">
         <div><span>Priority</span><strong><span class="prio prio-${esc(String(L.priority || "").toLowerCase())}">${esc(L.priority || "—")}</span></strong></div>
-        <div><span>Jurisdiction</span><strong>${esc(L.jurisdiction || "—")}</strong></div>
-        <div><span>Wishes to proceed</span><strong>${esc(L.proceed || "—")}</strong></div>
+        <div><span>UK nation</span><strong>${esc(L.region || L.jurisdiction || "—")}</strong></div>
+        <div><span>Understands it's guidance only</span><strong>${esc(L.acknowledged || L.proceed || "—")}</strong></div>
         <div><span>Received</span><strong>${esc(fmtDate(i.created_at, true))}</strong></div>
       </div>
       <div class="detail-body">
-        <div class="case-section"><h5><span>2.2</span> Details of the enquiry</h5><div class="message-box">${esc(i.message)}</div></div>
-        <div class="case-section"><h5><span>4.1</span> Supporting notes &amp; information</h5>${L.notes ? `<div class="message-box">${esc(L.notes)}</div>` : '<p class="case-none">None provided.</p>'}</div>` : `
+        <div class="case-section"><h5><span>2.2</span> What they need advice with</h5><div class="message-box">${esc(i.message)}</div></div>
+        <div class="case-section"><h5><span>4.1</span> Extra information</h5>${L.notes ? `<div class="message-box">${esc(L.notes)}</div>` : '<p class="case-none">None provided.</p>'}</div>` : `
       <div class="detail-head">
         <button class="btn btn-ghost btn-sm close-detail" type="button" id="closeDetail">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Back to inbox
@@ -351,7 +354,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="notes">${legal ? "Case notes" : "Internal notes"} <span class="opt">(only admins can see these)</span></label>
+            <label for="notes">${isAdvice ? "Developer notes" : "Internal notes"} <span class="opt">(only admins can see these)</span></label>
             <textarea id="notes" maxlength="2000" placeholder="e.g. Replied on Tuesday, waiting for their response.">${esc(notesDraft != null ? notesDraft : (i.admin_notes || ""))}</textarea>
           </div>
         </div>
@@ -371,7 +374,7 @@
         </div>
         <span class="spacer"></span>
         <button class="btn btn-dark" type="button" id="saveBtn">Save changes</button>
-        ${legal ? '<button class="btn btn-ghost" type="button" id="printCaseBtn">Print case file</button>' : ""}
+        ${isAdvice ? '<button class="btn btn-ghost" type="button" id="printCaseBtn">Print request</button>' : ""}
         <button class="btn btn-danger" type="button" id="deleteBtn" aria-label="Delete enquiry">Delete</button>
       </div>`;
 
@@ -397,7 +400,7 @@
     $("#replyBtn").addEventListener("click", markReplied);
     $("#gmailBtn").addEventListener("click", markReplied);
     $("#saveBtn").addEventListener("click", () => save(i.id, $("#statusSel").value, $("#notes").value));
-    if (legal) $("#printCaseBtn").addEventListener("click", () => printCase(i));
+    if (isAdvice) $("#printCaseBtn").addEventListener("click", () => printCase(i));
     $("#deleteBtn").addEventListener("click", () => { pendingDeleteId = i.id; $("#confirmModal").classList.add("open"); $("#cancelDelete").focus(); });
   }
 
@@ -421,13 +424,13 @@
     }
   }
 
-  /* ---------- print a legal case file ---------- */
+  /* ---------- print an advice request ---------- */
   function printCase(i) {
-    const L = i.legal || {}, LBL = labelsFor(i);
+    const L = adv(i), LBL = labelsFor(i);
     const row = (k, v) => `<tr><th>${esc(k)}</th><td>${esc(v || "—")}</td></tr>`;
     const w = window.open("", "_blank");
     if (!w) { window.toast("Allow pop-ups to print the case file", "error"); return; }
-    w.document.write(`<!DOCTYPE html><html><head><title>${esc(i.reference)} — Legal Case File</title><style>
+    w.document.write(`<!DOCTYPE html><html><head><title>${esc(i.reference)} — Roblox Advice Request</title><style>
       body{font:14px/1.6 "Public Sans","Segoe UI",Arial,sans-serif;color:#0b1736;margin:40px auto;max-width:760px;padding:0 24px}
       header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #0b1736;padding-bottom:12px;margin-bottom:24px}
       header strong{font-size:18px;display:block}header span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6b7387}
@@ -439,14 +442,14 @@
       .box{white-space:pre-wrap;border:1px solid #d9dde5;padding:12px 14px}
       footer{margin-top:36px;font-size:11px;color:#6b7387;border-top:1px solid #d9dde5;padding-top:10px}
     </style></head><body>
-      <header><div><strong>Thornhill Corporation</strong><span>Legal Department · Case File</span></div><div class="ref">${esc(i.reference)}</div></header>
+      <header><div><strong>Thornhill Corporation</strong><span>Roblox Advice · Request</span></div><div class="ref">${esc(i.reference)}</div></header>
       <h1>${esc(i.subject)}</h1>
-      <h2>Part 1 — Applicant</h2><table>${row("Full name", i.full_name)}${row("Email address", i.email)}</table>
-      <h2>Part 2 — Details of the enquiry</h2><div class="box">${esc(i.message)}</div>
-      <h2>Part 3 — Assessment</h2><table>${row("Priority", L.priority)}${row("Lives in", L.jurisdiction)}${row("Wishes to proceed knowing they might not win", L.proceed)}${row("Case status", LBL[i.status])}${row("Received", fmtDate(i.created_at, true))}</table>
-      <h2>Part 4 — Supporting information</h2><div class="box">${esc(L.notes || "None provided.")}</div>
-      ${i.admin_notes ? `<h2>Case notes (internal)</h2><div class="box">${esc(i.admin_notes)}</div>` : ""}
-      <footer>Printed ${esc(new Date().toLocaleString("en-GB"))} by ${esc(session.display)}. Confidential. Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.</footer>
+      <h2>Part 1 — Their details</h2><table>${row("Full name", i.full_name)}${row("Email address", i.email)}</table>
+      <h2>Part 2 — What they need advice with</h2><div class="box">${esc(i.message)}</div>
+      <h2>Part 3 — About the request</h2><table>${row("Priority", L.priority)}${row("UK nation", L.region || L.jurisdiction)}${row("Understands this is general guidance only", L.acknowledged || L.proceed)}${row("Status", LBL[i.status])}${row("Received", fmtDate(i.created_at, true))}</table>
+      <h2>Part 4 — Extra information</h2><div class="box">${esc(L.notes || "None provided.")}</div>
+      ${i.admin_notes ? `<h2>Developer notes (internal)</h2><div class="box">${esc(i.admin_notes)}</div>` : ""}
+      <footer>Printed ${esc(new Date().toLocaleString("en-GB"))} by ${esc(session.display)}. Contains personal data. Keep it secure and shred when no longer needed. Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.</footer>
     </body></html>`);
     w.document.close(); w.focus(); setTimeout(() => w.print(), 300);
   }
@@ -462,7 +465,7 @@
       await Store.remove(session.name, session.code, id);
       items = items.filter(x => x.id !== id);
       closeDetail(); render();
-      window.toast(kind === "legal" ? "Case deleted" : "Enquiry deleted");
+      window.toast(kind === "advice" ? "Request deleted" : "Enquiry deleted");
     } catch (ex) { window.toast("Couldn't delete: " + ex.message, "error"); }
   });
   document.addEventListener("keydown", e => {
@@ -476,15 +479,15 @@
   $("#exportBtn").addEventListener("click", () => {
     const rows = visible();
     if (!rows.length) { window.toast("Nothing to export"); return; }
-    const cols = kind === "legal"
-      ? ["reference", "created_at", "status", "full_name", "email", "subject", "message", "priority", "jurisdiction", "proceed", "notes", "admin_notes"]
+    const cols = kind === "advice"
+      ? ["reference", "created_at", "status", "full_name", "email", "subject", "message", "priority", "region", "acknowledged", "notes", "admin_notes"]
       : ["reference", "created_at", "status", "full_name", "email", "phone", "category", "subject", "message", "admin_notes"];
-    const val = (r, c) => (["priority", "jurisdiction", "proceed", "notes"].includes(c) ? (r.legal || {})[c] : r[c]);
+    const val = (r, c) => (["priority", "region", "acknowledged", "notes"].includes(c) ? adv(r)[c] : r[c]);
     const cell = v => { let s = String(v == null ? "" : v); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
     const csv = [cols.join(",")].concat(rows.map(r => cols.map(c => cell(val(r, c))).join(","))).join("\r\n");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
-    a.download = (kind === "legal" ? "thornhill-legal-cases-" : "thornhill-enquiries-") + new Date().toISOString().slice(0, 10) + ".csv";
+    a.download = (kind === "advice" ? "thornhill-roblox-advice-" : "thornhill-enquiries-") + new Date().toISOString().slice(0, 10) + ".csv";
     document.body.appendChild(a); a.click(); a.remove();
   });
 

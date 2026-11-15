@@ -45,7 +45,7 @@
     const data = {
       fullName: form.fullName.value.trim(),
       email: form.email.value.trim(),
-      phone: form.phone.value.trim(),
+      phone: "",
       category: form.category.value,
       subject: form.subject.value.trim(),
       message: form.message.value.trim()

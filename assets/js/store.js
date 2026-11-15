@@ -83,25 +83,32 @@
       return item.reference;
     },
 
-    /** Customer: submit a legal enquiry form. Returns the case reference. */
-    async submitLegalEnquiry(e) {
+    /** Customer: submit a Roblox Advice request. Returns the reference. */
+    async submitRobloxAdvice(e) {
       if (LIVE) {
-        return await rpc("submit_legal_enquiry", {
+        return await rpc("submit_roblox_advice", {
           p_full_name: e.fullName, p_email: e.email, p_subject: e.subject, p_details: e.details,
-          p_priority: e.priority, p_jurisdiction: e.jurisdiction, p_proceed: e.proceed, p_notes: e.notes || null
+          p_priority: e.priority, p_region: e.region, p_acknowledged: e.acknowledged, p_notes: e.notes || null,
+          p_uk_resident: e.ukResident === true, p_age_confirmed: e.ageConfirmed === true
         });
       }
       const list = demoRead();
       const now = new Date().toISOString();
       const item = {
-        id: uuid(), reference: makeRef(), kind: "legal", full_name: e.fullName, email: e.email, phone: null,
-        category: "Legal enquiry", subject: e.subject, message: e.details, status: "new",
-        legal: { priority: e.priority, jurisdiction: e.jurisdiction, proceed: e.proceed, notes: e.notes || null },
+        id: uuid(), reference: makeRef(), kind: "advice", full_name: e.fullName, email: e.email, phone: null,
+        category: "Roblox advice", subject: e.subject, message: e.details, status: "new",
+        advice: { priority: e.priority, region: e.region, acknowledged: e.acknowledged, notes: e.notes || null },
         admin_notes: null, created_at: now, updated_at: now
       };
       list.unshift(item);
       demoWrite(list);
       return item.reference;
+    },
+
+    /** Admin: delete personal data that has passed its retention period (runs on sign-in). */
+    async purgeExpired(name, code) {
+      if (!LIVE) return null;
+      try { return await rpc("admin_purge_expired", { p_name: name, p_code: code }); } catch (e) { return null; }
     },
 
     /** Admin: verify full name + special code. Returns the admin's display name or throws. */

@@ -2,6 +2,7 @@
 <html lang="en-GB" data-theme="light">
 <head>
   <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Support — Thornhill Corporation</title>
   <meta name="description" content="Contact Thornhill Corporation support. Send an enquiry and our team will reply by email.">
@@ -14,18 +15,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css?v=20261114a">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261115a">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="utilbar">
     <div class="container utilbar-inner">
-      <span>Marketing · Media · Development · Finance · Legal Aid</span>
+      <span>Based in the United Kingdom · Services for UK residents only</span>
       <nav aria-label="Quick links">
         <a href="/documents">Documents</a>
         <a href="/support">Support</a>
-        <a href="/legal">Legal enquiry</a>
+        <a href="/roblox-advice">Roblox Advice</a>
         <a href="/admin-panel">Staff sign in</a>
       </nav>
     </div>
@@ -43,7 +44,7 @@
           <li><a href="/#services">Services</a></li>
           <li><a href="/#gallery">Gallery</a></li>
           <li><a href="/support" class="active" aria-current="page">Support</a></li>
-          <li><a href="/legal">Legal</a></li>
+          <li><a href="/roblox-advice">Roblox Advice</a></li>
         </ul>
       </nav>
       <div class="nav-actions">
@@ -63,7 +64,7 @@
       <div class="container">
         <div class="eyebrow reveal">Support centre</div>
         <h1 class="reveal d1">How can we help?</h1>
-        <p class="reveal d2">Whether it's marketing, media, development, finance or legal aid, fill in the form below and your enquiry will go straight to the Thornhill team. We'll reply to you by email.</p>
+        <p class="reveal d2">Whether it's marketing, media, development, finance or Roblox, fill in the form below and your enquiry will go straight to the Thornhill team. We'll reply to you by email. Our services are only available to people who live in the United Kingdom.</p>
       </div>
     </div>
 
@@ -81,11 +82,7 @@
               <input id="email" name="email" type="email" autocomplete="email" maxlength="200" required>
               <div class="error">Please enter a valid email address.</div>
             </div>
-            <div class="field">
-              <label for="phone">Phone <span class="opt">(optional)</span></label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="40">
-            </div>
-            <div class="field">
+            <div class="field full">
               <label for="category">Enquiry type <span class="req">*</span></label>
               <select id="category" name="category" required>
                 <option value="">Choose one…</option>
@@ -94,7 +91,7 @@
                 <option>Media</option>
                 <option>Development</option>
                 <option>Finance</option>
-                <option>Legal aid</option>
+                <option>Roblox</option>
                 <option>Partnerships &amp; business</option>
                 <option>Careers &amp; staff applications</option>
                 <option>Feedback or complaint</option>
@@ -116,8 +113,12 @@
             <!-- Honeypot field to catch spam bots -->
             <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
             <div class="field full">
-              <label class="check"><input type="checkbox" id="consent" required> I agree that Thornhill Corporation may store these details and contact me by email about this enquiry.</label>
-              <div class="error">Please tick this box so we can reply to you.</div>
+              <div class="privacy-box">
+                <strong>How we use your information</strong>
+                We'll use your name, email address and message only to reply to your enquiry. It's stored in an encrypted database that only authorised Thornhill staff can access, it's never sold or used for advertising, and it's deleted automatically 12 months after your enquiry is resolved. Please don't include passwords, Roblox 2-Step Verification codes or bank details. Read our <a href="/privacy" target="_blank" rel="noopener">Privacy Notice</a>.
+              </div>
+              <label class="check"><input type="checkbox" id="consent" required> I live in the United Kingdom, I'm 13 or over (or I'm a parent or guardian sending this for a child), and I've read the <a href="/privacy" target="_blank" rel="noopener">Privacy Notice</a>.</label>
+              <div class="error">Please confirm this so we can accept your enquiry.</div>
             </div>
           </div>
           <div class="form-actions">
@@ -155,7 +156,7 @@
           </div>
           <div class="info-row">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/></svg>
-            <div><strong>Privacy</strong><span>Your details are only visible to Thornhill administrators.</span></div>
+            <div><strong>Privacy</strong><span>Your details are stored securely and are only visible to authorised Thornhill staff. <a href="/privacy">Privacy Notice</a></span></div>
           </div>
         </div>
 
@@ -168,6 +169,14 @@
           <details>
             <summary>What is my reference number for?</summary>
             <p>After submitting you'll get a reference like TH-AB12CD. Quote it if you need to follow up so we can find your enquiry quickly.</p>
+          </details>
+          <details>
+            <summary>Can I contact you from outside the UK?</summary>
+            <p>Sorry, no. Thornhill Corporation is based in the United Kingdom and our services are only available to people who live in the UK.</p>
+          </details>
+          <details>
+            <summary>Need Roblox Advice?</summary>
+            <p>Use our <a href="/roblox-advice">Roblox Advice form</a>. A Roblox Developer will review your request and reply by email.</p>
           </details>
           <details>
             <summary>Can I send more than one enquiry?</summary>
@@ -183,7 +192,7 @@
       <div class="footer-grid">
         <div class="footer-about">
           <a href="/" class="brand"><img class="logo-light" src="assets/img/icon-light-96.png" alt=""><img class="logo-dark" src="assets/img/icon-dark-96.png" alt=""><div>Thornhill<small>Corporation</small></div></a>
-          <p>Established 2026. Marketing, media, development, finance and legal aid — always with our clients' best interests at heart.</p>
+          <p>Established 2026 and based in the United Kingdom. Marketing, media, development and Roblox Advice — always with our clients' best interests at heart.</p>
         </div>
         <div>
           <h4>Explore</h4>
@@ -198,11 +207,24 @@
           <h4>Help</h4>
           <ul>
             <li><a href="/support">Support</a></li>
-            <li><a href="/legal">Legal Enquiry Form</a></li>
+            <li><a href="/roblox-advice">Roblox Advice</a></li>
             <li><a href="mailto:support@thornhill.example" data-support-email>support@thornhill.example</a></li>
             <li><a href="/admin-panel">Administrator login</a></li>
           </ul>
         </div>
+        <div>
+          <h4>Your privacy</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Notice</a></li>
+            <li><a href="/terms">Terms of Use</a></li>
+            <li><a href="/privacy#cookies">Cookies</a></li>
+            <li><a href="/privacy#rights">Your data rights</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-notice">
+        <p><strong>Based in the United Kingdom.</strong> Thornhill Corporation operates from the UK and our services are only available to people who live in the UK.</p>
+        <p>Nothing on this website is legal, financial or professional advice. Roblox Advice is general guidance from a Roblox Developer. Thornhill Corporation is not affiliated with, endorsed by or sponsored by Roblox Corporation. Roblox is a trademark of Roblox Corporation.</p>
       </div>
       <div class="footer-bottom">
         <span class="tq-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>Protected by Thornhill Quick</span>
@@ -211,9 +233,9 @@
     </div>
   </footer>
 
-  <script src="assets/js/config.js?v=20261114a"></script>
-  <script src="assets/js/store.js?v=20261114a"></script>
-  <script src="assets/js/main.js?v=20261114a"></script>
-  <script src="assets/js/support.js?v=20261114a"></script>
+  <script src="assets/js/config.js?v=20261115a"></script>
+  <script src="assets/js/store.js?v=20261115a"></script>
+  <script src="assets/js/main.js?v=20261115a"></script>
+  <script src="assets/js/support.js?v=20261115a"></script>
 </body>
 </html>

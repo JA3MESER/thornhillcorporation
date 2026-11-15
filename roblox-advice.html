@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox Advice — Thornhill Corporation</title>
+  <meta name="description" content="Request Roblox Advice from Thornhill Corporation. A Roblox Developer will review your request and reply by email. Available to UK residents only.">
+  <meta name="theme-color" content="#0a0b0d">
+  <link rel="icon" type="image/png" href="assets/img/icon-dark-96.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <script>
+    (function () { try { var t = localStorage.getItem("thornhill.theme"); if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261115a">
+  <link rel="stylesheet" href="assets/css/advice.css?v=20261115a">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="utilbar">
+    <div class="container utilbar-inner">
+      <span>Based in the United Kingdom · Services for UK residents only</span>
+      <nav aria-label="Quick links">
+        <a href="/documents">Documents</a>
+        <a href="/support">Support</a>
+        <a href="/roblox-advice">Roblox Advice</a>
+        <a href="/admin-panel">Staff sign in</a>
+      </nav>
+    </div>
+  </div>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="/" class="brand" aria-label="Thornhill Corporation home">
+        <img class="logo-light" src="assets/img/icon-light-96.png" alt=""><img class="logo-dark" src="assets/img/icon-dark-96.png" alt="">
+        <div>Thornhill<small>Corporation</small></div>
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          <li><a href="/#home">Home</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#services">Services</a></li>
+          <li><a href="/#gallery">Gallery</a></li>
+          <li><a href="/support">Support</a></li>
+          <li><a href="/roblox-advice" class="active" aria-current="page">Roblox Advice</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <button class="icon-btn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-head">
+      <div class="container">
+        <div class="eyebrow reveal">Roblox Advice</div>
+        <h1 class="reveal d1">Roblox Advice Request</h1>
+        <p class="reveal d2">Need help with a Roblox game, group, script or community? Fill in this form and a Roblox Developer will review your request and reply to you by email. Roblox Advice is only available to people who live in the United Kingdom.</p>
+      </div>
+    </div>
+
+    <div class="container form-layout">
+      <div class="lf-sheet reveal">
+        <div class="lf-top">
+          <div class="lf-org"><img src="assets/img/icon-dark-96.png" alt=""><div><strong>Thornhill Corporation</strong><span>Roblox Advice</span></div></div>
+          <div class="lf-code"><span>Form</span><strong>RA-1</strong></div>
+        </div>
+
+        <div class="lf-safety" role="note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="M12 8v4M12 16h.01"/></svg>
+          <div><strong>Keep your account safe.</strong> Never put your Roblox password, 2-Step Verification codes or account cookies in this form. Thornhill staff will never ask you for them.</div>
+        </div>
+
+        <form id="adviceForm" novalidate>
+          <section class="lf-part">
+            <div class="lf-part-head"><span class="lf-num">Part 1</span><h2>Your details</h2></div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="fullName"><span class="lf-q">1.1</span> Full name <span class="req">*</span></label>
+                <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" required>
+                <div class="error">Please enter your full name.</div>
+              </div>
+              <div class="field">
+                <label for="email"><span class="lf-q">1.2</span> Email address <span class="req">*</span></label>
+                <input id="email" name="email" type="email" autocomplete="email" maxlength="200" required>
+                <div class="error">Please enter a valid email address.</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lf-part">
+            <div class="lf-part-head"><span class="lf-num">Part 2</span><h2>Your request</h2></div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="subject"><span class="lf-q">2.1</span> Advice subject <span class="req">*</span></label>
+                <input id="subject" name="subject" type="text" maxlength="200" required placeholder="For example: Setting up group ranks for my game">
+                <div class="error">Please give your request a subject.</div>
+              </div>
+              <div class="field full">
+                <label for="details"><span class="lf-q">2.2</span> Advice details <span class="req">*</span></label>
+                <textarea id="details" name="details" maxlength="5000" required placeholder="Tell us about your Roblox game, group or problem, what you've tried so far, and what you'd like help with."></textarea>
+                <div class="hint"><span>Minimum 10 characters</span><span id="detailsCount">0 / 5000</span></div>
+                <div class="error">Please describe what you need advice with (at least 10 characters).</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lf-part">
+            <div class="lf-part-head"><span class="lf-num">Part 3</span><h2>About your request</h2></div>
+            <div class="form-grid">
+              <div class="field full">
+                <label id="priorityLabel"><span class="lf-q">3.1</span> What priority do you think this is? <span class="req">*</span></label>
+                <div class="lf-options four" role="radiogroup" aria-labelledby="priorityLabel">
+                  <label class="lf-opt"><input type="radio" name="priority" value="Low"><span><strong>Low</strong><small>No rush</small></span></label>
+                  <label class="lf-opt"><input type="radio" name="priority" value="Medium"><span><strong>Medium</strong><small>Within weeks</small></span></label>
+                  <label class="lf-opt"><input type="radio" name="priority" value="High"><span><strong>High</strong><small>Within days</small></span></label>
+                  <label class="lf-opt"><input type="radio" name="priority" value="Urgent"><span><strong>Urgent</strong><small>As soon as possible</small></span></label>
+                </div>
+                <div class="error">Please choose a priority.</div>
+              </div>
+              <div class="field full">
+                <label for="region"><span class="lf-q">3.2</span> Which part of the United Kingdom do you live in? <span class="req">*</span></label>
+                <select id="region" name="region" required>
+                  <option value="">Select one…</option>
+                  <option>England</option>
+                  <option>Wales</option>
+                  <option>Scotland</option>
+                  <option>Northern Ireland</option>
+                </select>
+                <div class="hint"><span>Roblox Advice is only available to people who live in the UK.</span></div>
+                <div class="error">Please select where in the UK you live.</div>
+              </div>
+              <div class="field full">
+                <label id="ackLabel"><span class="lf-q">3.3</span> Do you understand that our advice is general guidance from a Roblox Developer, and isn't legal, financial or professional advice? <span class="req">*</span></label>
+                <div class="lf-options two" role="radiogroup" aria-labelledby="ackLabel">
+                  <label class="lf-opt"><input type="radio" name="acknowledged" value="Yes"><span><strong>Yes</strong><small>I understand and want to continue</small></span></label>
+                  <label class="lf-opt"><input type="radio" name="acknowledged" value="No"><span><strong>No</strong><small>I'm not sure</small></span></label>
+                </div>
+                <div class="lf-stop" id="ackStop" hidden>We can only help if you understand this. Our Roblox Developers can share their experience, but they aren't lawyers or financial advisers. For problems with your Roblox account or payments, contact <a href="https://www.roblox.com/support" target="_blank" rel="noopener">Roblox Support</a>. For legal help, <a href="https://www.citizensadvice.org.uk/" target="_blank" rel="noopener">Citizens Advice</a> is free.</div>
+                <div class="error">Please choose Yes to continue.</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="lf-part">
+            <div class="lf-part-head"><span class="lf-num">Part 4</span><h2>Extra information</h2></div>
+            <div class="form-grid">
+              <div class="field full">
+                <label for="notes"><span class="lf-q">4.1</span> Do you have any notes or extra information to help us? <span class="opt">(optional)</span></label>
+                <textarea id="notes" name="notes" maxlength="5000" placeholder="For example: links to your game or group, error messages, or what you've already tried."></textarea>
+                <div class="hint"><span>No passwords, codes or bank details.</span><span id="notesCount">0 / 5000</span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Honeypot field to catch spam bots -->
+          <div class="hp" aria-hidden="true"><label>Leave blank <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+          <section class="lf-part lf-declare">
+            <div class="lf-part-head"><span class="lf-num">Part 5</span><h2>Your information and confirmation</h2></div>
+            <div class="privacy-box">
+              <strong>How we use your information</strong>
+              We'll use what you tell us only to review and reply to your request. It's stored in an encrypted database that only authorised Thornhill staff can access, it's never sold or used for advertising, and it's deleted automatically 12 months after your request is answered. You can ask us to see or delete it at any time. Read our <a href="/privacy" target="_blank" rel="noopener">Privacy Notice</a> for the details.
+            </div>
+            <div class="field">
+              <label class="check"><input type="checkbox" id="ukResident" name="ukResident" required> I live in the United Kingdom.</label>
+              <div class="error">Roblox Advice is only available to people who live in the UK.</div>
+            </div>
+            <div class="field">
+              <label class="check"><input type="checkbox" id="ageConfirmed" name="ageConfirmed" required> I'm 13 or over, or I'm a parent or guardian filling this in for a child.</label>
+              <div class="error">If you're under 13, please ask a parent or guardian to fill this in for you.</div>
+            </div>
+            <div class="field">
+              <label class="check"><input type="checkbox" id="privacyRead" name="privacyRead" required> I've read the <a href="/privacy" target="_blank" rel="noopener">Privacy Notice</a> and the <a href="/terms" target="_blank" rel="noopener">Terms of Use</a>, and the information I've given is true.</label>
+              <div class="error">Please confirm you've read the Privacy Notice and Terms of Use.</div>
+            </div>
+            <div class="form-actions">
+              <small>Fields marked <span style="color: var(--accent);">*</span> are required.</small>
+              <button class="btn btn-primary" type="submit" id="submitBtn">
+                Send request
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </section>
+        </form>
+
+        <div class="success lf-success" id="success" role="status" aria-live="polite">
+          <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <h2 style="font-size: 1.8rem;">Request received</h2>
+          <p>Thank you, <strong id="successName"></strong>. A Roblox Developer will review your request and reply to <strong id="successEmail"></strong>.</p>
+          <p style="margin-bottom: 4px;">Your reference:</p>
+          <div class="ref" id="successRef">TH-000000</div>
+          <p class="lf-small">Please quote this reference if you contact us about your request.</p>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="/" class="btn btn-ghost">Back to home</a>
+            <button class="btn btn-primary" type="button" id="newEnquiry">Send another request</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-stack">
+        <div class="panel info-card reveal d1">
+          <h3>What happens next</h3>
+          <ol class="lf-steps">
+            <li><strong>Send your request</strong><span>You get a reference number straight away.</span></li>
+            <li><strong>Developer review</strong><span>A Roblox Developer reads your request and looks into it.</span></li>
+            <li><strong>Reply by email</strong><span>We send our advice and suggested next steps to your email address.</span></li>
+          </ol>
+        </div>
+        <div class="panel info-card reveal d2">
+          <h3>Your information</h3>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <div><strong>Encrypted and private</strong><span>Sent over an encrypted connection and kept in an encrypted database the public can't read.</span></div>
+          </div>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7z"/></svg>
+            <div><strong>Staff only</strong><span>Only authorised Thornhill staff can see it, using their own secure sign-in.</span></div>
+          </div>
+          <div class="info-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+            <div><strong>Deleted automatically</strong><span>Removed 12 months after your request is answered, or sooner if you ask.</span></div>
+          </div>
+        </div>
+        <div class="lf-notice reveal d2">
+          <strong>Please note</strong>
+          Roblox Advice is general guidance only. Thornhill Corporation is not part of Roblox Corporation, so we can't change, restore or unban Roblox accounts. For account or payment problems, contact <a href="https://www.roblox.com/support" target="_blank" rel="noopener">Roblox Support</a>.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <a href="/" class="brand"><img class="logo-light" src="assets/img/icon-light-96.png" alt=""><img class="logo-dark" src="assets/img/icon-dark-96.png" alt=""><div>Thornhill<small>Corporation</small></div></a>
+          <p>Established 2026 and based in the United Kingdom. Marketing, media, development and Roblox Advice — always with our clients' best interests at heart.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="/#about">About</a></li>
+            <li><a href="/#services">Services</a></li>
+            <li><a href="/#gallery">Gallery</a></li>
+            <li><a href="/documents">Documents</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Help</h4>
+          <ul>
+            <li><a href="/support">Support</a></li>
+            <li><a href="/roblox-advice">Roblox Advice</a></li>
+            <li><a href="mailto:support@thornhill.example" data-support-email>support@thornhill.example</a></li>
+            <li><a href="/admin-panel">Administrator login</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Your privacy</h4>
+          <ul>
+            <li><a href="/privacy">Privacy Notice</a></li>
+            <li><a href="/terms">Terms of Use</a></li>
+            <li><a href="/privacy#cookies">Cookies</a></li>
+            <li><a href="/privacy#rights">Your data rights</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-notice">
+        <p><strong>Based in the United Kingdom.</strong> Thornhill Corporation operates from the UK and our services are only available to people who live in the UK.</p>
+        <p>Nothing on this website is legal, financial or professional advice. Roblox Advice is general guidance from a Roblox Developer. Thornhill Corporation is not affiliated with, endorsed by or sponsored by Roblox Corporation. Roblox is a trademark of Roblox Corporation.</p>
+      </div>
+      <div class="footer-bottom">
+        <span class="tq-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>Protected by Thornhill Quick</span>
+        <p>Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the right to this material.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js?v=20261115a"></script>
+  <script src="assets/js/store.js?v=20261115a"></script>
+  <script src="assets/js/main.js?v=20261115a"></script>
+  <script src="assets/js/advice.js?v=20261115a"></script>
+</body>
+</html>
