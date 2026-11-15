@@ -10,6 +10,15 @@
 
   msg.addEventListener("input", () => { count.textContent = msg.value.length + " / 5000"; });
 
+  // Pre-select the enquiry type from links like /support?topic=Media
+  try {
+    const topic = new URLSearchParams(location.search).get("topic");
+    if (topic) {
+      const opt = [...form.category.options].find(o => o.value.toLowerCase() === topic.toLowerCase());
+      if (opt) form.category.value = opt.value;
+    }
+  } catch (e) {}
+
   const rules = {
     fullName: v => v.trim().length >= 2,
     email: v => emailRe.test(v.trim()),
