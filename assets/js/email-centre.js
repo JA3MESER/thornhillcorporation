@@ -258,20 +258,31 @@
       // Received email is shown in a locked-down frame: no scripts, links open in a new tab
       if (m.direction === "out") {
         f.srcdoc = m.body_html.replace("<head>", '<head><base target="_blank">') + "<!-- " + Date.now() + " -->";
-        f.addEventListener("load", () => { try { f.style.height = Math.min(4000, f.contentDocument.documentElement.scrollHeight + 4) + "px"; } catch (e) { f.style.height = "640px"; } });
+        f.addEventListener("load", () => fitFrame(f));
         return;
       }
       f.srcdoc = `<!DOCTYPE html><html><head><base target="_blank"><meta charset="utf-8"><style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px;line-height:1.6;color:#1f2430;word-wrap:break-word}img{max-width:100%;height:auto}blockquote{margin:0 0 0 8px;padding-left:10px;border-left:3px solid #d0d7e2;color:#5b6475}</style></head><body>${m.body_html}</body></html>`;
       f.addEventListener("load", () => {
-        try {
-          const b = f.contentDocument.body;
-          f.style.height = Math.min(4000, Math.ceil(b.getBoundingClientRect().height) + 16) + "px";
-          // Re-measure once images have loaded
-          [...b.querySelectorAll("img")].forEach(img => img.addEventListener("load", () => { f.style.height = Math.min(4000, Math.ceil(b.getBoundingClientRect().height) + 16) + "px"; }));
-        } catch (e) { f.style.height = "480px"; }
+        fitFrame(f);
+        // Re-measure once images have loaded
+        try { [...f.contentDocument.querySelectorAll("img")].forEach(img => img.addEventListener("load", () => fitFrame(f))); } catch (e) {}
       });
     });
     pane.scrollTop = 0;
+  }
+
+  // Size an email frame to its content. Frames inside collapsed messages can't be measured
+  // (they're 0px high), so they're re-measured when the message is opened.
+  function fitFrame(f) {
+    try {
+      const d = f.contentDocument;
+      if (!d || !d.body) return;
+      if (!f.offsetParent) return;          // hidden: measure later
+      const h = f.classList.contains("out")
+        ? d.documentElement.scrollHeight + 4
+        : Math.ceil(d.body.getBoundingClientRect().height) + 16;
+      f.style.height = Math.min(4000, Math.max(h, 40)) + "px";
+    } catch (e) { f.style.height = f.classList.contains("out") ? "640px" : "480px"; }
   }
 
   function messageHtml(m, expanded) {
@@ -304,7 +315,13 @@
     if (!el || !state.current) return;
     const act = el.dataset.act, c = state.current;
     const last = c.messages[c.messages.length - 1];
-    if (act === "toggle") { el.closest(".msg").classList.toggle("open"); return; }
+    if (act === "toggle") {
+      const msg = el.closest(".msg");
+      msg.classList.toggle("open");
+      // A frame loaded while its message was collapsed measured 0px high: measure it again now it's visible
+      if (msg.classList.contains("open")) msg.querySelectorAll("iframe.msg-html").forEach(fitFrame);
+      return;
+    }
     if (act === "back") { $("#mailRead").classList.remove("open"); return; }
     if (act === "enquiry" && c.enquiry) { admin().openEnquiry(c.enquiry.id); return; }
     if (act === "reply" || act === "replyall") return openComposer(replyContext(last, act === "replyall"));

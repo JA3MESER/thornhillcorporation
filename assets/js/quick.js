@@ -177,7 +177,8 @@
   const prompt = $("#quickPrompt");
   async function maybePrompt() {
     const s = admin() && admin().session();
-    if (!prompt || !s || !supported || !Store.live || s.via === "quick") { if (prompt) prompt.hidden = true; return; }
+    // On PCs and Macs the faster PIN sign-in is offered instead (see quick-pin.js)
+    if (!prompt || !s || !supported || !Store.live || s.via === "quick" || !isPhone) { if (prompt) prompt.hidden = true; return; }
     try { if (localStorage.getItem(DISMISS_KEY + s.name.toLowerCase())) return; } catch (e) {}
     try {
       const o = await Store.quickOverview(s.name, s.code);
@@ -224,15 +225,17 @@
           <div class="q-info"><strong>${esc(d.label || "Device")}</strong><span>Added ${esc(fmt(d.created_at))} · Last used ${esc(fmt(d.last_used_at))}</span></div>
           <button class="btn btn-danger btn-sm" type="button" data-q-remove="${esc(d.id)}">Remove</button>
         </div>`).join("") : '<p class="muted">No devices yet.</p>'}</div>
+      <div id="pinManage"></div>
       <div class="q-phone">
         <div class="q-phone-qr">${window.ThornhillQR ? window.ThornhillQR.svg((window.ThornhillSites ? window.ThornhillSites.main() : location.origin) + "/id", { size: 112 }) : ""}</div>
         <div><strong>Your Thornhill ID</strong><span>Scan this with your phone to open your Thornhill ID. Add it to your home screen, then use it to approve sign-ins on any computer. Your phone needs Thornhill Quick set up first: sign in to this panel on your phone and tap “Set up on this device”.</span></div>
       </div>
       <div class="q-actions">
         <button class="btn btn-primary btn-sm" type="button" data-q-add ${supported ? "" : "disabled"}>Set up this device</button>
-        <button class="btn btn-ghost btn-sm" type="button" data-q-all ${o.sessions ? "" : "disabled"}>Sign out of all Thornhill Quick sessions (${o.sessions})</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-q-all ${o.sessions ? "" : "disabled"}>Sign out everywhere (${o.sessions})</button>
       </div>
       <p class="muted">If a device is lost or stolen, remove it here straight away. Anyone signing in with Thornhill Quick must still unlock that device with its fingerprint, face or PIN.</p>`;
+    document.dispatchEvent(new Event("thornhill:quick-manage"));
     body.querySelector("[data-q-add]").addEventListener("click", async e => {
       e.currentTarget.disabled = true;
       try { await register(); window.toast("Thornhill Quick is set up on this device"); }
@@ -240,7 +243,7 @@
       renderManage();
     });
     body.querySelector("[data-q-all]").addEventListener("click", () => {
-      if (window.confirm("Sign out every Thornhill Quick session, including this one if you used Thornhill Quick?")) { closeManage(); admin().signOutAll(); }
+      if (window.confirm("Sign out everywhere? This ends every Thornhill Quick and PIN session, including this one, and forgets all your trusted PCs.")) { closeManage(); admin().signOutAll(); }
     });
     body.querySelectorAll("[data-q-remove]").forEach(b => b.addEventListener("click", async () => {
       if (!window.confirm("Remove this device from Thornhill Quick?")) return;

@@ -335,3 +335,26 @@ body.admin { background: var(--bg-alt); }
 .q-phone-qr svg { display: block; width: 100%; height: 100%; }
 .q-phone strong { display: block; margin-bottom: 4px; }
 .q-phone span { font-size: .84rem; color: var(--text-2); }
+
+/* ---------- Thornhill Quick PIN (trusted PCs) ---------- */
+.login-card.pin-mode > :not(.pin-login):not(.staff-notice) { display: none !important; }
+.pin-login { text-align: center; }
+.pin-login h1 { margin: 14px 0 6px; }
+.pin-login > p { margin: 0 0 22px; }
+.pin-login .form-error { text-align: left; }
+.pin-avatar { width: 64px; height: 64px; margin: 0 auto; border-radius: 14px; display: grid; place-items: center; background: var(--accent); color: #fff; font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; box-shadow: 0 3px 0 var(--accent-strong); }
+.pin-boxes { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 18px; }
+.pin-boxes input { width: 100%; height: 58px; padding: 0; text-align: center; font-size: 1.6rem; font-weight: 800; font-family: var(--font-display); border: 2px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); }
+.pin-boxes input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.pin-boxes input:disabled { opacity: .6; }
+.pin-boxes.shake { animation: pinShake .4s; }
+@keyframes pinShake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@media (prefers-reduced-motion: reduce) { .pin-boxes.shake { animation: none; } }
+.pin-links { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.link-btn { background: none; border: 0; padding: 4px 0; color: var(--accent); font-weight: 700; font-size: .88rem; cursor: pointer; }
+.link-btn:hover { text-decoration: underline; }
+#pinModal .modal-card { max-width: 460px; }
+#pinModal .pin-boxes input { height: 52px; }
+.pin-facts { margin: 4px 0 18px; padding-left: 18px; font-size: .84rem; color: var(--text-3); display: grid; gap: 4px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.pin-this { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); font-size: .72rem; font-weight: 800; vertical-align: 1px; }

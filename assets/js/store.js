@@ -250,6 +250,27 @@
       if (data.ok === false) throw new Error(data.error || "Thornhill Quick couldn't sign you in.");
       return data;
     },
+    /* ---- Thornhill Quick PIN (trusted PCs) ---- */
+    async pinSetup(n, c, pin, label) {
+      const r = await rpc("admin_pin_setup", { p_name: n, p_code: c, p_pin: pin, p_label: label });
+      if (r && r.auth === false) throw notAuthorised();
+      if (!r || !r.ok) throw new Error((r && r.error) || "Couldn't set up PIN sign-in.");
+      return r;
+    },
+    async pinDeviceInfo(id, secret) { return await rpc("pin_device_info", { p_device: id, p_secret: secret }); },
+    async pinSignIn(id, secret, pin) { return await rpc("pin_sign_in", { p_device: id, p_secret: secret, p_pin: pin }); },
+    async pinDevices(n, c) {
+      if (!LIVE) return { ok: true, devices: [] };
+      const r = await rpc("admin_pin_devices", { p_name: n, p_code: c });
+      if (!r || !r.ok) throw notAuthorised();
+      return r;
+    },
+    async pinRemove(n, c, id) {
+      const r = await rpc("admin_pin_remove", { p_name: n, p_code: c, p_id: id });
+      if (!r || !r.ok) throw notAuthorised();
+      return r;
+    },
+
     async quickOverview(n, c) {
       if (!LIVE) return { ok: true, devices: [], sessions: 0 };
       const r = await rpc("admin_quick_overview", { p_name: n, p_code: c });

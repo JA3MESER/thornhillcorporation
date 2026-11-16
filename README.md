@@ -153,3 +153,10 @@ Copyright © 2026 Thornhill Corporation. All Rights Reserved. Thornhill owns the
 - Forms are limited to 3 per email address per hour (100 per hour overall) to stop spam.
 - Retention runs automatically when an admin signs in: enquiries/advice requests are deleted 12 months after they're resolved (24 months max), emails after 24 months, sign-in records after 30 days. Update the Privacy Notice if you change these periods.
 - To answer a data request, search the person's email address in the admin panel; use Export CSV to give them a copy, or Delete to erase it.
+
+## Thornhill Quick PIN (trusted PCs)
+
+- Run `supabase/quick-pin.sql` once (after `quick.sql`).
+- After signing in on a PC, staff see "Sign in faster on this PC" and choose a 6-digit PIN. Next time the admin panel opens straight to "Welcome back, [name]" and only needs the PIN.
+- Sign-in needs both the 256-bit secret stored on that PC and the PIN (stored as a bcrypt hash). Weak PINs are refused, 5 wrong PINs forget the PC, and trust expires after 60 days without use.
+- Trusted PCs are listed in the Thornhill Quick window, where they can be removed. "Sign out everywhere" also forgets every trusted PC.
